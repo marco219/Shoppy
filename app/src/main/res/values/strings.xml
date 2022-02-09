@@ -1,0 +1,13 @@
+<resources>
+    <string name="app_name">Shoppy</string>
+    <string name="title_home">Home</string>
+    <string name="title_shopping_list">Shopping List</string>
+    <string name="title_inventory">Inventory</string>
+    <string name="add_item_to_shopping_list">Add item</string>
+    <string name="add_item_to_inventory">Add item</string>
+    <string name="search_hint">Search in shopping list</string>
+    <string name="add_article_to_shopping_list">Add article to shopping list</string>
+    <string name="item_name">Item name</string>
+    <string name="item_category">Item category</string>
+    <string name="add">Add</string>
+</resources>

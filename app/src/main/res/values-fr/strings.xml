@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Shoppy</string>
+    <string name="title_home">Acceuil</string>
+    <string name="title_shopping_list">Liste de course</string>
+    <string name="title_inventory">Inventaire</string>
+    <string name="add_item_to_shopping_list">Ajouter article</string>
+    <string name="add_item_to_inventory">Ajouter article</string>
+    <string name="search_hint">Rechercher dans la liste de course</string>
+    <string name="add_article_to_shopping_list">Ajouter un article à la liste</string>
+    <string name="item_name">Nom</string>
+    <string name="item_category">Catégorie</string>
+    <string name="add">Ajouter</string>
+</resources>
