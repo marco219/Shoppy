@@ -7,8 +7,11 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.SearchView
+import androidx.core.view.get
+import androidx.core.view.size
 import androidx.fragment.app.Fragment
-import androidx.lifecycle.ViewModelProvider
+import androidx.fragment.app.viewModels
+import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.StaggeredGridLayoutManager
 import com.google.android.material.chip.Chip
@@ -19,10 +22,17 @@ import com.google.android.material.snackbar.Snackbar
 import com.marcoassenza.shoppy.R
 import com.marcoassenza.shoppy.adapters.ShoppingListAdapter
 import com.marcoassenza.shoppy.databinding.FragmentShoppingListBinding
-import com.marcoassenza.shoppy.views.activities.MainActivity
+import com.marcoassenza.shoppy.models.Item
 import com.marcoassenza.shoppy.viewmodels.ShoppingListViewModel
+import com.marcoassenza.shoppy.views.activities.MainActivity
+import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import timber.log.Timber
 
+@AndroidEntryPoint
 class ShoppingListFragment : Fragment(), ShoppingListAdapter.ShoppingListRecyclerViewListener {
 
     private var _binding: FragmentShoppingListBinding? = null
@@ -30,18 +40,14 @@ class ShoppingListFragment : Fragment(), ShoppingListAdapter.ShoppingListRecycle
     // This property is only valid between onCreateView and
     // onDestroyView.
     private val binding get() = _binding!!
-    private lateinit var shoppingListViewModel: ShoppingListViewModel
+    private val shoppingListViewModel: ShoppingListViewModel by viewModels()
     private val shoppingListAdapter = ShoppingListAdapter(this)
 
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
-        savedInstanceState: Bundle?
-    ): View {
-        shoppingListViewModel = ViewModelProvider(this)[ShoppingListViewModel::class.java]
-
+        savedInstanceState: Bundle?): View {
         _binding = FragmentShoppingListBinding.inflate(inflater, container, false)
-
         return binding.root
     }
 
@@ -61,38 +67,32 @@ class ShoppingListFragment : Fragment(), ShoppingListAdapter.ShoppingListRecycle
             }
         }
         setupRecyclerViewObserver()
+        setupSearchView()
+
+        setupChipsFilterObserver(binding.chipGroup)
     }
 
     override fun onResume() {
         super.onResume()
         activity?.let { activity ->
-            MainActivity.mainFabCustomizer(
+            val fab = MainActivity.mainFabCustomizer(
                 activity,
                 R.string.add_item_to_shopping_list,
                 R.drawable.ic_baseline_add_shopping_cart_24
             )
             {
-                context?.let {
-                    val bottomSheetDialog = AddItemFragment()
-                    bottomSheetDialog.show(parentFragmentManager, AddItemFragment.TAG)
+                val bottomSheetDialog = AddItemFragment()
+                bottomSheetDialog.show(parentFragmentManager, AddItemFragment.TAG)
+            }
+
+            binding.recyclerview.addOnScrollListener(object : RecyclerView.OnScrollListener() {
+                override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
+                    if (dy > 0)
+                        fab?.hide()
+                    else if (dy < 0)
+                        fab?.show()
                 }
-            }
-        }
-
-        val fab = activity?.findViewById<ExtendedFloatingActionButton>(R.id.fab)
-        binding.recyclerview.addOnScrollListener(object : RecyclerView.OnScrollListener() {
-            override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
-                if (dy > 0)
-                    fab?.hide()
-                else if (dy < 0)
-                    fab?.show()
-            }
-        })
-
-        setupSearchView()
-
-        context?.let {
-            setupChipsFilterObserver(it, binding.chipGroup)
+            })
         }
     }
 
@@ -101,19 +101,25 @@ class ShoppingListFragment : Fragment(), ShoppingListAdapter.ShoppingListRecycle
         _binding = null
     }
 
-    private fun setupChipsFilterObserver(context: Context, chipGroup: ChipGroup) {
-        shoppingListViewModel.listFilters.observe(viewLifecycleOwner) { list ->
-            list.forEach { filter ->
-                chipGroup.addChip(context, filter).setOnCheckedChangeListener { chip, isChecked ->
-                    Timber.d((chip as Chip).text.toString() + " is " + isChecked)
+    private fun setupChipsFilterObserver(chipGroup: ChipGroup) {
+        viewLifecycleOwner.lifecycleScope.launch{
+            shoppingListViewModel.categoryList.collect { list ->
+                list?.forEach { category ->
+                        withContext(Dispatchers.Main){
+                            chipGroup.addChip(requireContext(), category).setOnCheckedChangeListener {chip, isChecked ->
+                                setCategoryFilter(chip.text.toString(), isChecked)
+                            }
+                        }
                 }
             }
         }
     }
 
     private fun setupRecyclerViewObserver() {
-        shoppingListViewModel.itemList.observe(viewLifecycleOwner) { list ->
-            shoppingListAdapter.setShoppingList(list)
+        viewLifecycleOwner.lifecycleScope.launch{
+            shoppingListViewModel.itemList.collect { list ->
+                shoppingListAdapter.setShoppingList(list)
+            }
         }
     }
 
@@ -122,26 +128,34 @@ class ShoppingListFragment : Fragment(), ShoppingListAdapter.ShoppingListRecycle
         binding.searchBar.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
             override fun onQueryTextSubmit(searchText: String?): Boolean {
                 searchText?.let {
-                    shoppingListAdapter.filter(searchText.lowercase())
+                    setTextFilter(searchText.lowercase())
                 }
                 return false
             }
 
             override fun onQueryTextChange(searchText: String?): Boolean {
                 searchText?.let {
-                    shoppingListAdapter.filter(searchText.lowercase())
+                    setTextFilter(searchText.lowercase())
                 }
                 return true
             }
         })
     }
 
-    override fun onItemClick(shoppingItem: String) {
-        Snackbar.make(binding.root, shoppingItem, BaseTransientBottomBar.LENGTH_SHORT)
+    private fun setCategoryFilter(chipText: String, isChecked: Boolean){
+        shoppingListAdapter.filter(category = chipText, isChecked = isChecked)
+    }
+
+    private fun setTextFilter(filterText:String){
+        shoppingListAdapter.filter(filterText)
+    }
+
+    override fun onItemClick(shoppingItem: Item) {
+        Snackbar.make(binding.root, shoppingItem.name, BaseTransientBottomBar.LENGTH_SHORT)
             .show()
     }
 
-    override fun onItemLongClick(shoppingItem: String) {
+    override fun onItemLongClick(shoppingItem: Item) {
         //TODO("Not yet implemented")
     }
 

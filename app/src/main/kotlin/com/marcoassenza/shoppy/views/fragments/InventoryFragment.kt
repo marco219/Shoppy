@@ -10,9 +10,11 @@ import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import com.marcoassenza.shoppy.R
 import com.marcoassenza.shoppy.databinding.FragmentInventoryBinding
-import com.marcoassenza.shoppy.views.activities.MainActivity
 import com.marcoassenza.shoppy.viewmodels.InventoryViewModel
+import com.marcoassenza.shoppy.views.activities.MainActivity
+import dagger.hilt.android.AndroidEntryPoint
 
+@AndroidEntryPoint
 class InventoryFragment : Fragment() {
 
     private var _binding: FragmentInventoryBinding? = null
@@ -25,8 +27,7 @@ class InventoryFragment : Fragment() {
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
-        savedInstanceState: Bundle?
-    ): View {
+        savedInstanceState: Bundle?): View {
         inventoryViewModel = ViewModelProvider(this)[InventoryViewModel::class.java]
 
         _binding = FragmentInventoryBinding.inflate(inflater, container, false)

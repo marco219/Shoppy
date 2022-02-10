@@ -11,7 +11,9 @@ import com.google.android.material.floatingactionbutton.ExtendedFloatingActionBu
 import com.marcoassenza.shoppy.R
 import com.marcoassenza.shoppy.databinding.FragmentHomeBinding
 import com.marcoassenza.shoppy.viewmodels.HomeViewModel
+import dagger.hilt.android.AndroidEntryPoint
 
+@AndroidEntryPoint
 class HomeFragment : Fragment() {
 
     private var _binding: FragmentHomeBinding? = null

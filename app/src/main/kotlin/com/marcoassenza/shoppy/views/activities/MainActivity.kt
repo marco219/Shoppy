@@ -10,7 +10,9 @@ import androidx.navigation.ui.setupWithNavController
 import com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton
 import com.marcoassenza.shoppy.R
 import com.marcoassenza.shoppy.databinding.ActivityMainBinding
+import dagger.hilt.android.AndroidEntryPoint
 
+@AndroidEntryPoint
 class MainActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityMainBinding
@@ -32,7 +34,7 @@ class MainActivity : AppCompatActivity() {
             textResourceId: Int,
             iconResourceId: Int,
             onClickAction: () -> Unit
-        ) {
+        ): ExtendedFloatingActionButton? {
             val context = activity.applicationContext
             val fab = activity.findViewById<ExtendedFloatingActionButton>(R.id.fab)
             fab?.apply {
@@ -43,6 +45,8 @@ class MainActivity : AppCompatActivity() {
                     onClickAction()
                 }
             }?.show()
+
+            return fab
         }
     }
 }

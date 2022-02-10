@@ -5,19 +5,33 @@ import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import com.marcoassenza.shoppy.databinding.ItemCardAdapterBinding
+import com.marcoassenza.shoppy.models.Item
 import java.util.*
 
 class ShoppingListAdapter(private val shoppingListRecyclerViewListener: ShoppingListRecyclerViewListener) :
     RecyclerView.Adapter<ShoppingItemViewHolder>() {
 
     interface ShoppingListRecyclerViewListener {
-        fun onItemClick(shoppingItem: String)
-        fun onItemLongClick(shoppingItem: String)
+        fun onItemClick(shoppingItem: Item)
+        fun onItemLongClick(shoppingItem: Item)
         //fun onRecyclerViewEnd()
     }
 
-    private var originalShoppingList: List<String> = listOf()
-    private var filteredShoppingList: List<String> = listOf()
+    private var filterText = ""
+    private var categoriesFilters: MutableList<String> = mutableListOf()
+
+    private var originalShoppingList: MutableList<Item> = mutableListOf()
+    private val filteredShoppingList: List<Item>
+        get() {
+            return  originalShoppingList
+                .filter { item ->
+                    item.name.lowercase(Locale.getDefault())
+                        .contains(filterText.lowercase(Locale.getDefault()))
+                }.filter{ item ->
+                    if (categoriesFilters.isEmpty()) true
+                    else categoriesFilters.contains(item.category.lowercase())
+                }
+        }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ShoppingItemViewHolder {
         val inflater = LayoutInflater.from(parent.context)
@@ -27,7 +41,7 @@ class ShoppingListAdapter(private val shoppingListRecyclerViewListener: Shopping
 
     override fun onBindViewHolder(holder: ShoppingItemViewHolder, position: Int) {
         val shoppingItem = filteredShoppingList[position]
-        holder.binding.cardTitle.text = shoppingItem
+        holder.binding.cardTitle.text = shoppingItem.name
         //TODO: change color based on filter
         //holder.binding.card.cardForegroundColor = MaterialColors.getColor(holder.itemView, R.color.md_theme_light_primary)
 
@@ -63,26 +77,36 @@ class ShoppingListAdapter(private val shoppingListRecyclerViewListener: Shopping
         return filteredShoppingList.size
     }
 
+    fun filter(text: String) {
+        filterText = text
+        notifyDataSetChanged()
+    }
 
-    fun filter(filterText: String) {
-        filteredShoppingList = originalShoppingList.filter { item ->
-            item.lowercase(Locale.getDefault()).contains(filterText.lowercase(Locale.getDefault()))
-        }
+    fun filter(category: String, isChecked: Boolean) {
+        if (categoriesFilters.contains(category.lowercase()) and !isChecked)
+            categoriesFilters.remove(category.lowercase())
+
+        if (!categoriesFilters.contains(category.lowercase()) and isChecked)
+            categoriesFilters.add(category.lowercase())
+
+        notifyDataSetChanged()
+    }
+
+    private fun resetFilters(){
+        categoriesFilters.clear()
+        filterText = ""
         notifyDataSetChanged()
     }
 
     @SuppressLint("NotifyDataSetChanged")
-    fun setShoppingList(shoppingList: List<String>) {
-        originalShoppingList = shoppingList
-        filteredShoppingList = shoppingList
-
-        val oldSize = filteredShoppingList.size
+    fun setShoppingList(shoppingList: List<Item>) {
+        val oldSize = originalShoppingList.size
 
         shoppingList.forEach { item ->
-            if (!filteredShoppingList.contains(item)) filteredShoppingList.plus(item)
+            if (!originalShoppingList.contains(item)) originalShoppingList.add(item)
         }
 
-        val newSize = filteredShoppingList.size
+        val newSize = originalShoppingList.size
         notifyItemRangeChanged(oldSize, newSize)
     }
 }

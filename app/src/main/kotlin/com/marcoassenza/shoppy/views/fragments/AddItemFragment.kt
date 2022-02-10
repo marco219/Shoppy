@@ -5,23 +5,25 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ArrayAdapter
-import androidx.lifecycle.ViewModelProvider
+import androidx.fragment.app.viewModels
+import androidx.lifecycle.lifecycleScope
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import com.marcoassenza.shoppy.R
-import com.marcoassenza.shoppy.databinding.DropdownItemBinding
 import com.marcoassenza.shoppy.databinding.FragmentAddItemBinding
-import com.marcoassenza.shoppy.databinding.FragmentShoppingListBinding
+import com.marcoassenza.shoppy.models.Item
 import com.marcoassenza.shoppy.viewmodels.ShoppingListViewModel
+import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.launch
 
+@AndroidEntryPoint
 class AddItemFragment: BottomSheetDialogFragment() {
 
     private var _binding: FragmentAddItemBinding? = null
-
     // This property is only valid between onCreateView and
     // onDestroyView.
     private val binding get() = _binding!!
-
-    private lateinit var shoppingListViewModel: ShoppingListViewModel
+    private val shoppingListViewModel: ShoppingListViewModel by viewModels()
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -29,9 +31,6 @@ class AddItemFragment: BottomSheetDialogFragment() {
         savedInstanceState: Bundle?
     ): View {
         _binding = FragmentAddItemBinding.inflate(inflater, container, false)
-
-        shoppingListViewModel = ViewModelProvider(this)[ShoppingListViewModel::class.java]
-
         return binding.root
     }
 
@@ -41,11 +40,29 @@ class AddItemFragment: BottomSheetDialogFragment() {
     }
 
 
-    private fun setupDropdownMenuObserver(){
-        shoppingListViewModel.listFilters.observe(viewLifecycleOwner) { list ->
-            val arrayAdapter = ArrayAdapter(requireContext(),
-                R.layout.dropdown_item, list)
-            binding.itemCategoryInput.setAdapter(arrayAdapter)
+    private fun setupDropdownMenuObserver() {
+        viewLifecycleOwner.lifecycleScope.launch {
+            shoppingListViewModel.categoryList.collect { list ->
+                list?.let {
+                    val arrayAdapter = ArrayAdapter(
+                        requireContext(),
+                        R.layout.dropdown_item, list
+                    )
+                    binding.itemCategoryInput.setAdapter(arrayAdapter)
+                }
+            }
+        }
+
+        binding.validateButton.setOnClickListener {
+            val itemName = binding.itemNameInput.text.toString()
+            val itemCategory = binding.itemCategoryInput.text.toString()
+
+            if (itemName.isNotEmpty() and itemCategory.isNotEmpty()){
+                viewLifecycleOwner.lifecycleScope.launch{
+                        shoppingListViewModel.insertNewItem(Item(itemName, itemCategory))
+                        dismiss()
+                }
+            }
         }
     }
 
