@@ -11,4 +11,21 @@
     <string name="item_name">Nom</string>
     <string name="item_category">Catégorie</string>
     <string name="add">Ajouter</string>
+
+    <string name="fruits">fruits</string>
+    <string name="vegetables">légumes</string>
+    <string name="drinks">boissons</string>
+    <string name="spices">épices</string>
+    <string name="condiments">condiments</string>
+    <string name="others">autres</string>
+    <string name="grains">graines</string>
+    <string name="cereals">céréales</string>
+    <string name="dairy">produits laitiers</string>
+    <string name="snacks">en-cas</string>
+    <string name="meat">viandes</string>
+    <string name="fish">poissons</string>
+    <string name="frozen">congélés</string>
+    <string name="can">conserves</string>
+    <string name="toiletries">produits de toilette</string>
+    <string name="household">produits ménagers</string>
 </resources>

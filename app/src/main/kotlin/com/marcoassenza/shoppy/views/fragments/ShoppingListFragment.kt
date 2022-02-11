@@ -1,14 +1,13 @@
 package com.marcoassenza.shoppy.views.fragments
 
-import android.content.Context
+import android.content.res.ColorStateList
 import android.content.res.Configuration
+import android.graphics.Color
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.SearchView
-import androidx.core.view.get
-import androidx.core.view.size
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
@@ -16,12 +15,13 @@ import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.StaggeredGridLayoutManager
 import com.google.android.material.chip.Chip
 import com.google.android.material.chip.ChipGroup
-import com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton
+import com.google.android.material.color.MaterialColors
 import com.google.android.material.snackbar.BaseTransientBottomBar
 import com.google.android.material.snackbar.Snackbar
 import com.marcoassenza.shoppy.R
 import com.marcoassenza.shoppy.adapters.ShoppingListAdapter
 import com.marcoassenza.shoppy.databinding.FragmentShoppingListBinding
+import com.marcoassenza.shoppy.models.Category
 import com.marcoassenza.shoppy.models.Item
 import com.marcoassenza.shoppy.viewmodels.ShoppingListViewModel
 import com.marcoassenza.shoppy.views.activities.MainActivity
@@ -30,7 +30,6 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
-import timber.log.Timber
 
 @AndroidEntryPoint
 class ShoppingListFragment : Fragment(), ShoppingListAdapter.ShoppingListRecyclerViewListener {
@@ -68,7 +67,6 @@ class ShoppingListFragment : Fragment(), ShoppingListAdapter.ShoppingListRecycle
         }
         setupRecyclerViewObserver()
         setupSearchView()
-
         setupChipsFilterObserver(binding.chipGroup)
     }
 
@@ -106,9 +104,10 @@ class ShoppingListFragment : Fragment(), ShoppingListAdapter.ShoppingListRecycle
             shoppingListViewModel.categoryList.collect { list ->
                 list?.forEach { category ->
                         withContext(Dispatchers.Main){
-                            chipGroup.addChip(requireContext(), category).setOnCheckedChangeListener {chip, isChecked ->
-                                setCategoryFilter(chip.text.toString(), isChecked)
-                            }
+                            chipGroup.addCategoryChip(category)
+                                .setOnCheckedChangeListener {_, isChecked ->
+                                    shoppingListAdapter.filter(category = category, isChecked = isChecked)
+                                }
                         }
                 }
             }
@@ -128,26 +127,18 @@ class ShoppingListFragment : Fragment(), ShoppingListAdapter.ShoppingListRecycle
         binding.searchBar.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
             override fun onQueryTextSubmit(searchText: String?): Boolean {
                 searchText?.let {
-                    setTextFilter(searchText.lowercase())
+                    shoppingListAdapter.filter(searchText.lowercase())
                 }
                 return false
             }
 
             override fun onQueryTextChange(searchText: String?): Boolean {
                 searchText?.let {
-                    setTextFilter(searchText.lowercase())
+                    shoppingListAdapter.filter(searchText.lowercase())
                 }
                 return true
             }
         })
-    }
-
-    private fun setCategoryFilter(chipText: String, isChecked: Boolean){
-        shoppingListAdapter.filter(category = chipText, isChecked = isChecked)
-    }
-
-    private fun setTextFilter(filterText:String){
-        shoppingListAdapter.filter(filterText)
     }
 
     override fun onItemClick(shoppingItem: Item) {
@@ -159,12 +150,17 @@ class ShoppingListFragment : Fragment(), ShoppingListAdapter.ShoppingListRecycle
         //TODO("Not yet implemented")
     }
 
-    private fun ChipGroup.addChip(context: Context, label: String): Chip {
-        Chip(context).apply {
+    private fun ChipGroup.addCategoryChip(category: Category): Chip {
+        Chip(requireContext()).apply {
             id = View.generateViewId()
-            text = label
+            text = category.displayName
             isClickable = true
             isCheckable = true
+            val isColorLight = MaterialColors.isColorLight(category.color)
+            if (isColorLight) setTextColor(Color.BLACK)
+            else setTextColor(Color.WHITE)
+            chipBackgroundColor = ColorStateList.valueOf(category.color)
+            chipStrokeColor = ColorStateList.valueOf(category.color)
             setChipSpacingHorizontalResource(R.dimen.big_margin)
             isCheckedIconVisible = true
             isFocusable = true

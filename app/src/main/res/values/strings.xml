@@ -10,4 +10,21 @@
     <string name="item_name">Item name</string>
     <string name="item_category">Item category</string>
     <string name="add">Add</string>
+
+    <string name="fruits">fruits</string>
+    <string name="vegetables">vegetables</string>
+    <string name="drinks">drinks</string>
+    <string name="spices">spices</string>
+    <string name="condiments">condiments</string>
+    <string name="others">others</string>
+    <string name="grains">grains</string>
+    <string name="cereals">cereals</string>
+    <string name="dairy">snacks</string>
+    <string name="meat">meat</string>
+    <string name="fish">fish</string>
+    <string name="frozen">frozen</string>
+    <string name="can">can</string>
+    <string name="toiletries">toiletries</string>
+    <string name="household">household</string>
+    <string name="snacks">snacks</string>
 </resources>

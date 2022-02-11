@@ -1,10 +1,14 @@
 package com.marcoassenza.shoppy.adapters
 
 import android.annotation.SuppressLint
+import android.content.res.ColorStateList
+import android.graphics.Color
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
+import com.google.android.material.color.MaterialColors
 import com.marcoassenza.shoppy.databinding.ItemCardAdapterBinding
+import com.marcoassenza.shoppy.models.Category
 import com.marcoassenza.shoppy.models.Item
 import java.util.*
 
@@ -18,7 +22,7 @@ class ShoppingListAdapter(private val shoppingListRecyclerViewListener: Shopping
     }
 
     private var filterText = ""
-    private var categoriesFilters: MutableList<String> = mutableListOf()
+    private var categoriesFilters: MutableList<Int> = mutableListOf()
 
     private var originalShoppingList: MutableList<Item> = mutableListOf()
     private val filteredShoppingList: List<Item>
@@ -29,7 +33,7 @@ class ShoppingListAdapter(private val shoppingListRecyclerViewListener: Shopping
                         .contains(filterText.lowercase(Locale.getDefault()))
                 }.filter{ item ->
                     if (categoriesFilters.isEmpty()) true
-                    else categoriesFilters.contains(item.category.lowercase())
+                    else categoriesFilters.contains(item.category.id)
                 }
         }
 
@@ -40,30 +44,17 @@ class ShoppingListAdapter(private val shoppingListRecyclerViewListener: Shopping
     }
 
     override fun onBindViewHolder(holder: ShoppingItemViewHolder, position: Int) {
-        val shoppingItem = filteredShoppingList[position]
-        holder.binding.cardTitle.text = shoppingItem.name
-        //TODO: change color based on filter
-        //holder.binding.card.cardForegroundColor = MaterialColors.getColor(holder.itemView, R.color.md_theme_light_primary)
-
-        /*val circularProgressDrawable = CircularProgressDrawable(holder.itemView.context)
-
-        Glide.with(holder.itemView.context)
-            .load(GlideUrl(user.picture.medium, LazyHeaders.Builder()
-                .addHeader("User-Agent", "android")
-                .build()))
-            .error(R.drawable.ic_baseline_report_problem_24)
-            .placeholder(circularProgressDrawable.apply {
-                strokeWidth = 5f
-                centerRadius = 30f
-                start()
-            })
-            .into(holder.binding.picture)
-
-        if (position == shoppingList.size - 3) shoppingListRecyclerViewListener.onRecyclerViewEnd()
-        */
+        val item = filteredShoppingList[position]
+        holder.binding.cardTitle.text = item.displayName
+        item.category.color.let {
+            val isColorLight = MaterialColors.isColorLight(it)
+            if (isColorLight) holder.binding.cardTitle.setTextColor(Color.BLACK)
+            else holder.binding.cardTitle.setTextColor(Color.WHITE)
+            holder.binding.card.setCardBackgroundColor(ColorStateList.valueOf(it))
+        }
 
         holder.binding.card.setOnClickListener {
-            shoppingListRecyclerViewListener.onItemClick(shoppingItem)
+            shoppingListRecyclerViewListener.onItemClick(item)
         }
 
         holder.binding.card.setOnLongClickListener { /*it as MaterialCardView
@@ -82,12 +73,12 @@ class ShoppingListAdapter(private val shoppingListRecyclerViewListener: Shopping
         notifyDataSetChanged()
     }
 
-    fun filter(category: String, isChecked: Boolean) {
-        if (categoriesFilters.contains(category.lowercase()) and !isChecked)
-            categoriesFilters.remove(category.lowercase())
+    fun filter(category: Category, isChecked: Boolean) {
+        if (categoriesFilters.contains(category.id) and !isChecked)
+            categoriesFilters.remove(category.id)
 
-        if (!categoriesFilters.contains(category.lowercase()) and isChecked)
-            categoriesFilters.add(category.lowercase())
+        if (!categoriesFilters.contains(category.id) and isChecked)
+            categoriesFilters.add(category.id)
 
         notifyDataSetChanged()
     }
