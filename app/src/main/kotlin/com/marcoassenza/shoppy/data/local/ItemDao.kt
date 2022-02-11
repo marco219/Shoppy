@@ -1,9 +1,6 @@
 package com.marcoassenza.shoppy.data.local
 
-import androidx.room.Dao
-import androidx.room.Insert
-import androidx.room.OnConflictStrategy
-import androidx.room.Query
+import androidx.room.*
 import com.marcoassenza.shoppy.models.Item
 import kotlinx.coroutines.flow.Flow
 
@@ -18,6 +15,9 @@ interface ItemDao {
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertItems(items: List<Item>)
+
+    @Delete
+    suspend fun delete(item: Item)
 
     @Query("DELETE FROM item")
     suspend fun deleteAll()

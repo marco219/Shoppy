@@ -12,13 +12,15 @@ import com.marcoassenza.shoppy.models.Category
 import com.marcoassenza.shoppy.models.Item
 import java.util.*
 
+@SuppressLint("NotifyDataSetChanged")
 class ShoppingListAdapter(private val shoppingListRecyclerViewListener: ShoppingListRecyclerViewListener) :
     RecyclerView.Adapter<ShoppingItemViewHolder>() {
 
     interface ShoppingListRecyclerViewListener {
-        fun onItemClick(shoppingItem: Item)
-        fun onItemLongClick(shoppingItem: Item)
-        //fun onRecyclerViewEnd()
+        fun onItemCardClick(item: Item)
+        fun onItemCardLongClick(item: Item)
+        fun onItemCheckButtonClick(item: Item)
+        fun onItemInventoryButtonClick(item: Item)
     }
 
     private var filterText = ""
@@ -53,19 +55,39 @@ class ShoppingListAdapter(private val shoppingListRecyclerViewListener: Shopping
             holder.binding.card.setCardBackgroundColor(ColorStateList.valueOf(it))
         }
 
-        holder.binding.card.setOnClickListener {
-            shoppingListRecyclerViewListener.onItemClick(item)
+        holder.binding.itemCheckButton.setOnClickListener {
+            shoppingListRecyclerViewListener.onItemCheckButtonClick(item)
         }
-
-        holder.binding.card.setOnLongClickListener { /*it as MaterialCardView
-            it.isChecked = !it.isChecked
-            shoppingListRecyclerViewListener.onItemLongClick(shoppingItem)
-            */true
+        holder.binding.itemInventoryButton.setOnClickListener {
+            shoppingListRecyclerViewListener.onItemInventoryButtonClick(item)
+        }
+        holder.binding.card.setOnClickListener {
+            shoppingListRecyclerViewListener.onItemCardClick(item)
+        }
+        holder.binding.card.setOnLongClickListener {
+            true
         }
     }
 
     override fun getItemCount(): Int {
         return filteredShoppingList.size
+    }
+
+    fun setShoppingList(shoppingList: List<Item>) {
+        val oldSize = originalShoppingList.size
+
+        shoppingList.forEach { item ->
+            if (!originalShoppingList.contains(item)) originalShoppingList.add(item)
+        }
+
+        originalShoppingList.removeIf { item ->
+            val removeIf = !shoppingList.contains(item)
+            if (removeIf) notifyItemRemoved(originalShoppingList.indexOf(item))
+            removeIf
+        }
+
+        val newSize = originalShoppingList.size
+        notifyItemRangeChanged(oldSize, newSize)
     }
 
     fun filter(text: String) {
@@ -87,18 +109,6 @@ class ShoppingListAdapter(private val shoppingListRecyclerViewListener: Shopping
         categoriesFilters.clear()
         filterText = ""
         notifyDataSetChanged()
-    }
-
-    @SuppressLint("NotifyDataSetChanged")
-    fun setShoppingList(shoppingList: List<Item>) {
-        val oldSize = originalShoppingList.size
-
-        shoppingList.forEach { item ->
-            if (!originalShoppingList.contains(item)) originalShoppingList.add(item)
-        }
-
-        val newSize = originalShoppingList.size
-        notifyItemRangeChanged(oldSize, newSize)
     }
 }
 

@@ -16,8 +16,6 @@ import androidx.recyclerview.widget.StaggeredGridLayoutManager
 import com.google.android.material.chip.Chip
 import com.google.android.material.chip.ChipGroup
 import com.google.android.material.color.MaterialColors
-import com.google.android.material.snackbar.BaseTransientBottomBar
-import com.google.android.material.snackbar.Snackbar
 import com.marcoassenza.shoppy.R
 import com.marcoassenza.shoppy.adapters.ShoppingListAdapter
 import com.marcoassenza.shoppy.databinding.FragmentShoppingListBinding
@@ -117,7 +115,9 @@ class ShoppingListFragment : Fragment(), ShoppingListAdapter.ShoppingListRecycle
     private fun setupRecyclerViewObserver() {
         viewLifecycleOwner.lifecycleScope.launch{
             shoppingListViewModel.itemList.collect { list ->
-                shoppingListAdapter.setShoppingList(list)
+                withContext(Dispatchers.Main) {
+                    shoppingListAdapter.setShoppingList(list)
+                }
             }
         }
     }
@@ -141,14 +141,16 @@ class ShoppingListFragment : Fragment(), ShoppingListAdapter.ShoppingListRecycle
         })
     }
 
-    override fun onItemClick(shoppingItem: Item) {
-        Snackbar.make(binding.root, shoppingItem.name, BaseTransientBottomBar.LENGTH_SHORT)
-            .show()
+    override fun onItemCardClick(item: Item) {}
+    override fun onItemCardLongClick(item: Item) {}
+
+    override fun onItemCheckButtonClick(item: Item) {
+        viewLifecycleOwner.lifecycleScope.launch {
+            shoppingListViewModel.deleteItem(item)
+        }
     }
 
-    override fun onItemLongClick(shoppingItem: Item) {
-        //TODO("Not yet implemented")
-    }
+    override fun onItemInventoryButtonClick(item: Item) {}
 
     private fun ChipGroup.addCategoryChip(category: Category): Chip {
         Chip(requireContext()).apply {

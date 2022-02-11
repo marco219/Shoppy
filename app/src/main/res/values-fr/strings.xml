@@ -28,4 +28,6 @@
     <string name="can">conserves</string>
     <string name="toiletries">produits de toilette</string>
     <string name="household">produits ménagers</string>
+    <string name="check_button_content_description">Boutton validation article</string>
+    <string name="move_to_inventory_button_content_description">Boutton déplacer article dans l\'inventaire</string>
 </resources>

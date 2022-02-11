@@ -27,4 +27,6 @@
     <string name="toiletries">toiletries</string>
     <string name="household">household</string>
     <string name="snacks">snacks</string>
+    <string name="check_button_content_description">Item check button</string>
+    <string name="move_to_inventory_button_content_description">Move item to inventory button</string>
 </resources>

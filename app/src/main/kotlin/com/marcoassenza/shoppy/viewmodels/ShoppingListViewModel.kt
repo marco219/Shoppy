@@ -36,9 +36,17 @@ class ShoppingListViewModel @Inject constructor(
         }
     }
 
-    suspend fun insertNewItem(item:Item){
+    suspend fun insertNewItem(item: Item) {
         viewModelScope.launch {
             itemRepository.insertItem(item)
         }
     }
+
+    suspend fun deleteItem(item: Item) {
+        viewModelScope.launch {
+            itemRepository.deleteItem(item)
+        }
+    }
+
+
 }
