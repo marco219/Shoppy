@@ -17,10 +17,11 @@ import javax.annotation.Nonnull
 class DropDownMenuAdapter(
     @Nonnull val context: Context,
     @LayoutRes val resource: Int,
-    @Nonnull val categoryList: List<Category>) : BaseAdapter(), Filterable {
+    @Nonnull val categoryList: List<Category>
+) : BaseAdapter(), Filterable {
 
-    private val inflater: LayoutInflater
-            = context.getSystemService(Context.LAYOUT_INFLATER_SERVICE) as LayoutInflater
+    private val inflater: LayoutInflater =
+        context.getSystemService(Context.LAYOUT_INFLATER_SERVICE) as LayoutInflater
 
     override fun getCount(): Int {
         return categoryList.size
@@ -31,7 +32,7 @@ class DropDownMenuAdapter(
     }
 
     override fun getItemId(position: Int): Long {
-        return categoryList[position].id.toLong()
+        return categoryList[position].categoryId.toLong()
     }
 
     fun getCategory(position: Int): Category {
@@ -50,9 +51,9 @@ class DropDownMenuAdapter(
     }
 }
 
-class FakeFilter:Filter(){
+class FakeFilter : Filter() {
     override fun performFiltering(constraint: CharSequence?): FilterResults {
-       return FilterResults()
+        return FilterResults()
     }
 
     override fun publishResults(constraint: CharSequence?, results: FilterResults?) {

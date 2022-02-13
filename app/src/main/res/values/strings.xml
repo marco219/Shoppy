@@ -10,6 +10,9 @@
     <string name="item_name">Item name</string>
     <string name="item_category">Item category</string>
     <string name="add">Add</string>
+    <string name="item_successfully_deleted">has been deleted</string>
+    <string name="item_successfully_added">has been added</string>
+    <string name="undo">UNDO</string>
 
     <string name="fruits">fruits</string>
     <string name="vegetables">vegetables</string>

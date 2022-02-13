@@ -1,17 +1,17 @@
 <?xml version="1.0" encoding="utf-8"?>
-<com.google.android.material.card.MaterialCardView xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<com.google.android.material.card.MaterialCardView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/card"
+    style="?attr/materialCardViewFilledStyle"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    app:layout_constraintStart_toStartOf="parent"
-    app:layout_constraintBottom_toBottomOf="parent"
     android:layout_margin="@dimen/small_margin"
+    android:checkable="true"
     android:clickable="true"
     android:focusable="true"
-    android:checkable="true"
     android:hapticFeedbackEnabled="true"
-    style="?attr/materialCardViewFilledStyle">
+    app:layout_constraintBottom_toBottomOf="parent"
+    app:layout_constraintStart_toStartOf="parent">
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -21,10 +21,10 @@
         <TextView
             android:id="@+id/card_title"
             android:layout_width="match_parent"
-            android:maxLines="3"
-            android:layout_margin="@dimen/tiny_margin"
             android:layout_height="wrap_content"
+            android:layout_margin="@dimen/tiny_margin"
             android:gravity="center_horizontal"
+            android:maxLines="3"
             android:textAppearance="?attr/textAppearanceTitleMedium" />
 
         <LinearLayout
@@ -40,10 +40,10 @@
                 android:layout_height="wrap_content"
                 android:layout_margin="@dimen/tiny_margin"
                 android:backgroundTint="@color/md_theme_onSecondary"
-                app:srcCompat="@drawable/ic_baseline_check_24"
                 android:contentDescription="@string/check_button_content_description"
-                app:tint="@color/md_theme_onSecondaryContainer"
-                android:hapticFeedbackEnabled="true" />
+                android:hapticFeedbackEnabled="true"
+                app:srcCompat="@drawable/ic_baseline_check_24"
+                app:tint="@color/md_theme_onSecondaryContainer" />
 
             <com.google.android.material.floatingactionbutton.FloatingActionButton
                 android:id="@+id/item_inventory_button"
@@ -51,10 +51,10 @@
                 android:layout_height="wrap_content"
                 android:layout_margin="@dimen/tiny_margin"
                 android:backgroundTint="@color/md_theme_tertiaryContainer"
-                app:srcCompat="@drawable/ic_baseline_kitchen_24"
                 android:contentDescription="@string/move_to_inventory_button_content_description"
-                app:tint="@color/md_theme_tertiary"
-                android:hapticFeedbackEnabled="true" />
+                android:hapticFeedbackEnabled="true"
+                app:srcCompat="@drawable/ic_baseline_kitchen_24"
+                app:tint="@color/md_theme_tertiary" />
         </LinearLayout>
     </LinearLayout>
 

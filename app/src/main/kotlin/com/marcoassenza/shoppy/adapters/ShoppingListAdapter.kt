@@ -1,18 +1,16 @@
 package com.marcoassenza.shoppy.adapters
 
-import android.annotation.SuppressLint
 import android.content.res.ColorStateList
 import android.graphics.Color
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.color.MaterialColors
+import com.marcoassenza.shoppy.adapters.AutoNotify.autoNotify
 import com.marcoassenza.shoppy.databinding.ItemCardAdapterBinding
 import com.marcoassenza.shoppy.models.Category
 import com.marcoassenza.shoppy.models.Item
-import java.util.*
 
-@SuppressLint("NotifyDataSetChanged")
 class ShoppingListAdapter(private val shoppingListRecyclerViewListener: ShoppingListRecyclerViewListener) :
     RecyclerView.Adapter<ShoppingItemViewHolder>() {
 
@@ -29,14 +27,13 @@ class ShoppingListAdapter(private val shoppingListRecyclerViewListener: Shopping
     private var originalShoppingList: MutableList<Item> = mutableListOf()
     private val filteredShoppingList: List<Item>
         get() {
-            return  originalShoppingList
+            return originalShoppingList
                 .filter { item ->
-                    item.name.lowercase(Locale.getDefault())
-                        .contains(filterText.lowercase(Locale.getDefault()))
-                }.filter{ item ->
+                    item.name.contains(filterText)
+                }.filter { item ->
                     if (categoriesFilters.isEmpty()) true
-                    else categoriesFilters.contains(item.category.id)
-                }
+                    else categoriesFilters.contains(item.category.categoryId)
+                }.sortedByDescending { item -> item.id }
         }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ShoppingItemViewHolder {
@@ -73,42 +70,38 @@ class ShoppingListAdapter(private val shoppingListRecyclerViewListener: Shopping
         return filteredShoppingList.size
     }
 
-    fun setShoppingList(shoppingList: List<Item>) {
-        val oldSize = originalShoppingList.size
-
-        shoppingList.forEach { item ->
-            if (!originalShoppingList.contains(item)) originalShoppingList.add(item)
+    fun setShoppingList(newList: List<Item>) {
+        newList.forEach { item ->
+            if (!originalShoppingList.contains(item)) {
+                originalShoppingList.add(item)
+                notifyItemInserted(filteredShoppingList.indexOf(item))
+            }
         }
 
         originalShoppingList.removeIf { item ->
-            val removeIf = !shoppingList.contains(item)
-            if (removeIf) notifyItemRemoved(originalShoppingList.indexOf(item))
+            val removeIf = !newList.contains(item)
+            if (removeIf) {
+                notifyItemRemoved(filteredShoppingList.indexOf(item))
+            }
             removeIf
         }
-
-        val newSize = originalShoppingList.size
-        notifyItemRangeChanged(oldSize, newSize)
     }
 
     fun filter(text: String) {
+        val oldFilteredShoppingList = filteredShoppingList.toMutableList()
         filterText = text
-        notifyDataSetChanged()
+        autoNotify(oldFilteredShoppingList, filteredShoppingList) { o, n -> o.id == n.id }
     }
 
     fun filter(category: Category, isChecked: Boolean) {
-        if (categoriesFilters.contains(category.id) and !isChecked)
-            categoriesFilters.remove(category.id)
+        val oldFilteredShoppingList = filteredShoppingList.toMutableList()
+        if (categoriesFilters.contains(category.categoryId) and !isChecked)
+            categoriesFilters.remove(category.categoryId)
 
-        if (!categoriesFilters.contains(category.id) and isChecked)
-            categoriesFilters.add(category.id)
+        if (!categoriesFilters.contains(category.categoryId) and isChecked)
+            categoriesFilters.add(category.categoryId)
 
-        notifyDataSetChanged()
-    }
-
-    private fun resetFilters(){
-        categoriesFilters.clear()
-        filterText = ""
-        notifyDataSetChanged()
+        autoNotify(oldFilteredShoppingList, filteredShoppingList) { o, n -> o.id == n.id }
     }
 }
 

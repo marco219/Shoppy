@@ -6,25 +6,6 @@
     android:layout_height="match_parent"
     tools:context=".views.fragments.InventoryFragment">
 
-    <SearchView
-        android:id="@+id/search_bar"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_margin="@dimen/big_margin"
-        android:layout_gravity="top|center"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"></SearchView>
-
-    <com.google.android.material.chip.ChipGroup
-        android:id="@+id/chip_group"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        app:layout_constraintTop_toBottomOf="@id/search_bar"
-        app:layout_constraintStart_toStartOf="@id/search_bar">
-
-
-    </com.google.android.material.chip.ChipGroup>
-
     <TextView
         android:id="@+id/text_inventory"
         android:layout_width="match_parent"

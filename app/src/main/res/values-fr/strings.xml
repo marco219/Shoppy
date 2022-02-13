@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="app_name">Shoppy</string>
-    <string name="title_home">Acceuil</string>
+    <string name="title_home">Accueil</string>
     <string name="title_shopping_list">Liste de course</string>
     <string name="title_inventory">Inventaire</string>
     <string name="add_item_to_shopping_list">Ajouter article</string>
@@ -11,6 +11,10 @@
     <string name="item_name">Nom</string>
     <string name="item_category">Catégorie</string>
     <string name="add">Ajouter</string>
+    <string name="item_successfully_deleted">a bien été supprimé</string>
+    <string name="item_successfully_added">a bien été ajouté</string>
+    <string name="undo">ANNULER</string>
+
 
     <string name="fruits">fruits</string>
     <string name="vegetables">légumes</string>

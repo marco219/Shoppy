@@ -19,6 +19,9 @@ interface ItemDao {
     @Delete
     suspend fun delete(item: Item)
 
+    @Query("DELETE FROM item WHERE name = :name AND categoryId = :categoryId ")
+    suspend fun deleteItemWithNameAndCategory(name: String, categoryId: Int)
+
     @Query("DELETE FROM item")
     suspend fun deleteAll()
 

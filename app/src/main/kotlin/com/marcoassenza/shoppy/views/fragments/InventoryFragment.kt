@@ -27,7 +27,8 @@ class InventoryFragment : Fragment() {
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
-        savedInstanceState: Bundle?): View {
+        savedInstanceState: Bundle?
+    ): View {
         inventoryViewModel = ViewModelProvider(this)[InventoryViewModel::class.java]
 
         _binding = FragmentInventoryBinding.inflate(inflater, container, false)

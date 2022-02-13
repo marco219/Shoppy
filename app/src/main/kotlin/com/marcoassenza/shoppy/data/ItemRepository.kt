@@ -12,7 +12,8 @@ import javax.inject.Inject
 
 class ItemRepository @Inject constructor(
     @ApplicationContext private val applicationContext: Context,
-    private val itemDao: ItemDao) {
+    private val itemDao: ItemDao
+) {
 
     suspend fun insertItems(items: List<Item>) {
         itemDao.insertItems(items)
@@ -24,6 +25,10 @@ class ItemRepository @Inject constructor(
 
     suspend fun deleteItem(item: Item) {
         itemDao.delete(item)
+    }
+
+    suspend fun deleteItemWithNameAndCategory(item: Item) {
+        itemDao.deleteItemWithNameAndCategory(item.name, item.category.categoryId)
     }
 
     fun getItems(): DataWithStatus<Flow<List<Item>>> {
