@@ -63,11 +63,11 @@ class AddItemFragment(private val validationButtonListener: ValidationButtonList
                                 setAdapter(adapter)
                                 setOnItemClickListener { _, _, position, _ ->
                                     selectedCategory = list[position]
+                                }
                             }
                         }
                     }
                 }
-            }
         }
 
         binding.validateButton.setOnClickListener {

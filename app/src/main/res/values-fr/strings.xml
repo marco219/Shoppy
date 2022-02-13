@@ -34,4 +34,7 @@
     <string name="household">produits ménagers</string>
     <string name="check_button_content_description">Boutton validation article</string>
     <string name="move_to_inventory_button_content_description">Boutton déplacer article dans l\'inventaire</string>
+    <string name="empty_state_picture">Image état vide</string>
+    <string name="no_item_in_inventory">Ton inventaire est vide</string>
+    <string name="no_item_in_shopping_list">Ta liste de course est vide</string>
 </resources>

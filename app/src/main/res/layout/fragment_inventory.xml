@@ -6,17 +6,31 @@
     android:layout_height="match_parent"
     tools:context=".views.fragments.InventoryFragment">
 
-    <TextView
-        android:id="@+id/text_inventory"
-        android:layout_width="match_parent"
+    <ImageView
+        android:id="@+id/empty_state_image"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="@dimen/small_margin"
-        android:layout_marginTop="@dimen/small_margin"
-        android:layout_marginEnd="@dimen/small_margin"
-        android:textAlignment="center"
-        android:textSize="20sp"
+        android:layout_gravity="center"
+        android:contentDescription="@string/empty_state_picture"
+        android:scaleType="fitCenter"
+        android:src="@drawable/ic_empty_inventory"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
+
+    <TextView
+        android:id="@+id/empty_state_text"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="@dimen/big_margin"
+        android:layout_marginTop="@dimen/big_margin"
+        android:layout_marginEnd="@dimen/big_margin"
+        android:text="@string/no_item_in_inventory"
+        android:textAlignment="center"
+        android:textAppearance="?attr/textAppearanceTitleMedium"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/empty_state_image" />
+
 </androidx.constraintlayout.widget.ConstraintLayout>

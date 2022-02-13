@@ -32,4 +32,7 @@
     <string name="snacks">snacks</string>
     <string name="check_button_content_description">Item check button</string>
     <string name="move_to_inventory_button_content_description">Move item to inventory button</string>
+    <string name="empty_state_picture">empty state picture</string>
+    <string name="no_item_in_inventory">Your inventory is empty</string>
+    <string name="no_item_in_shopping_list">Your shopping list is empty</string>
 </resources>

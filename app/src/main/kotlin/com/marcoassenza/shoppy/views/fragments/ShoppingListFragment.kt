@@ -92,6 +92,8 @@ class ShoppingListFragment : Fragment(),
                 .flowWithLifecycle(lifecycle, Lifecycle.State.STARTED)
                 .collectLatest { list ->
                     withContext(Dispatchers.Main) {
+                        if (list.isEmpty()) setEmptyStateViewVisible(true)
+                        else setEmptyStateViewVisible(false)
                         shoppingListAdapter.setShoppingList(list)
                         binding.itemRecyclerview.smoothScrollToPosition(0)
                     }
@@ -172,6 +174,16 @@ class ShoppingListFragment : Fragment(),
                     fab?.show()
             }
         })
+    }
+
+    private fun setEmptyStateViewVisible(isVisible: Boolean) {
+        if (isVisible) {
+            binding.emptyStateImage.visibility = View.VISIBLE
+            binding.emptyStateText.visibility = View.VISIBLE
+        } else {
+            binding.emptyStateImage.visibility = View.GONE
+            binding.emptyStateText.visibility = View.GONE
+        }
     }
 
     override fun onItemCardClick(item: Item) {}
