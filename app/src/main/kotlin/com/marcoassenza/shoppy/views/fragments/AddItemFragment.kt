@@ -50,7 +50,7 @@ class AddItemFragment(private val validationButtonListener: ValidationButtonList
 
     private fun setupDropdownMenuObserver() {
         lifecycleScope.launch {
-            shoppingListViewModel.categoryList
+            shoppingListViewModel.defaultCategoryList
                 .flowWithLifecycle(lifecycle, Lifecycle.State.STARTED)
                 .collectLatest { list ->
                     list?.let {

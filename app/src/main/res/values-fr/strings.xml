@@ -22,7 +22,7 @@
     <string name="spices">épices</string>
     <string name="condiments">condiments</string>
     <string name="others">autres</string>
-    <string name="grains">graines</string>
+    <string name="dried">secs</string>
     <string name="cereals">céréales</string>
     <string name="dairy">produits laitiers</string>
     <string name="snacks">en-cas</string>
@@ -30,6 +30,7 @@
     <string name="fish">poissons</string>
     <string name="frozen">congélés</string>
     <string name="can">conserves</string>
+    <string name="legume">légumineuse</string>
     <string name="toiletries">produits de toilette</string>
     <string name="household">produits ménagers</string>
     <string name="check_button_content_description">Boutton validation article</string>

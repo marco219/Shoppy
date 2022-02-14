@@ -19,7 +19,7 @@
 
     <fragment
         android:id="@+id/navigation_inventory"
-        android:name="com.marcoassenza.shoppy.views.fragments.InventoryFragment"
+        android:name="com.marcoassenza.shoppy.views.fragments.ShoppingListFragment"
         android:label="@string/title_inventory"
-        tools:layout="@layout/fragment_inventory" />
+        tools:layout="@layout/fragment_shopping_list" />
 </navigation>

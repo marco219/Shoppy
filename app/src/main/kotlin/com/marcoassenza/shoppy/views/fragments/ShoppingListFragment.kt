@@ -78,10 +78,12 @@ class ShoppingListFragment : Fragment(),
             shoppingListViewModel.itemList
                 .flowWithLifecycle(lifecycle, Lifecycle.State.STARTED)
                 .collectLatest { list ->
-                    categoryListAdapter.setCategoryList(
-                        list.map { it.category }
-                            .distinct())
-                    binding.chipRecyclerview.smoothScrollToPosition(0)
+                    withContext(Dispatchers.Main) {
+                        categoryListAdapter.setCategoryList(
+                            list.map { it.category }
+                                .distinct())
+                        binding.chipRecyclerview.smoothScrollToPosition(0)
+                    }
                 }
         }
     }

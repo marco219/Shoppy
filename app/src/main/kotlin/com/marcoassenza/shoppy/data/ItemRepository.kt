@@ -35,7 +35,7 @@ class ItemRepository @Inject constructor(
         return DataWithStatus.success(null, itemDao.getAllItem())
     }
 
-    fun getCategories(): DataWithStatus<List<Category>> {
+    fun getDefaultCategories(): DataWithStatus<List<Category>> {
         val categoryIdList = applicationContext.resources.getIntArray(R.array.category_id_array)
             .toList()
         val categoryNameList =

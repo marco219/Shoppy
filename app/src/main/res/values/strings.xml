@@ -20,7 +20,7 @@
     <string name="spices">spices</string>
     <string name="condiments">condiments</string>
     <string name="others">others</string>
-    <string name="grains">grains</string>
+    <string name="dried">dried</string>
     <string name="cereals">cereals</string>
     <string name="dairy">snacks</string>
     <string name="meat">meat</string>
@@ -30,6 +30,7 @@
     <string name="toiletries">toiletries</string>
     <string name="household">household</string>
     <string name="snacks">snacks</string>
+    <string name="legume">legume</string>
     <string name="check_button_content_description">Item check button</string>
     <string name="move_to_inventory_button_content_description">Move item to inventory button</string>
     <string name="empty_state_picture">empty state picture</string>

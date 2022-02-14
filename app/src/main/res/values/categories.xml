@@ -17,13 +17,15 @@
         <item>13</item>
         <item>14</item>
         <item>15</item>
+        <item>16</item>
     </integer-array>
 
     <integer-array name="category_name_array">
         <item>@string/vegetables</item>
         <item>@string/fruits</item>
+        <item>@string/legume</item>
         <item>@string/spices</item>
-        <item>@string/grains</item>
+        <item>@string/dried</item>
         <item>@string/cereals</item>
         <item>@string/condiments</item>
         <item>@string/snacks</item>
@@ -41,6 +43,7 @@
     <integer-array name="category_color_array">
         <item>@color/md_green_800</item>
         <item>@color/md_orange_800</item>
+        <item>@color/md_deep_orange_800</item>
         <item>@color/md_yellow_800</item>
         <item>@color/md_brown_800</item>
         <item>@color/md_amber_800</item>

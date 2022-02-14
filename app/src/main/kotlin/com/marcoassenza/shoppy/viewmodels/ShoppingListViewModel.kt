@@ -27,8 +27,8 @@ class ShoppingListViewModel @Inject constructor(
         initialValue = emptyList()
     )
 
-    val categoryList: StateFlow<List<Category>?> = flow {
-        emit(itemRepository.getCategories().data)
+    val defaultCategoryList: StateFlow<List<Category>?> = flow {
+        emit(itemRepository.getDefaultCategories().data)
     }.stateIn(
         scope = viewModelScope,
         started = Lazily,
