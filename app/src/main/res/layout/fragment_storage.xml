@@ -4,10 +4,11 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".views.fragments.ShoppingListFragment">
+    tools:context=".views.fragments.StorageFragment">
 
     <SearchView
         android:id="@+id/search_bar"
+        android:focusable="false"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_gravity="top|center"
@@ -26,11 +27,10 @@
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/chip_recyclerview"
         android:layout_width="0dp"
-        android:layout_height="0dp"
+        android:layout_height="wrap_content"
         android:layout_marginStart="@dimen/tiny_margin"
         android:layout_marginTop="@dimen/tiny_margin"
         android:layout_marginEnd="@dimen/tiny_margin"
-        app:layout_constraintVertical_weight="1"
         android:orientation="horizontal"
         app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
         app:layout_constrainedWidth="true"
@@ -44,14 +44,13 @@
         android:id="@+id/item_recyclerview"
         android:layout_width="0dp"
         android:layout_height="0dp"
-        app:layout_constraintVertical_weight="10"
         app:layoutManager="androidx.recyclerview.widget.StaggeredGridLayoutManager"
         app:layout_constrainedHeight="true"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/chip_recyclerview"
-        tools:listitem="@layout/item_card_adapter" />
+        tools:listitem="@layout/grocery_item_adapter" />
 
     <ImageView
         android:id="@+id/empty_state_image"
@@ -60,7 +59,7 @@
         android:layout_gravity="center"
         android:contentDescription="@string/empty_state_picture"
         android:scaleType="fitCenter"
-        android:src="@drawable/ic_empty_shopping_list"
+        android:src="@drawable/ic_empty_storage"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -73,7 +72,7 @@
         android:layout_marginStart="@dimen/big_margin"
         android:layout_marginTop="@dimen/big_margin"
         android:layout_marginEnd="@dimen/big_margin"
-        android:text="@string/no_item_in_shopping_list"
+        android:text="@string/no_item_in_storage"
         android:textAlignment="center"
         android:textAppearance="?attr/textAppearanceTitleMedium"
         app:layout_constraintEnd_toEndOf="parent"

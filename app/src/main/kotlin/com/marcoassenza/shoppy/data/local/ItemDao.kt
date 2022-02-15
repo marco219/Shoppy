@@ -16,6 +16,12 @@ interface ItemDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertItems(items: List<Item>)
 
+    @Query("UPDATE item SET stockQuantity=:newStockQuantity WHERE id = :itemId")
+    suspend fun updateStockQuantity(newStockQuantity: Int?, itemId: Long)
+
+    @Query("UPDATE item SET isInGroceryList=:isInGroceryLit WHERE id = :itemId")
+    suspend fun updateIsInGroceryList(isInGroceryLit: Boolean, itemId: Long)
+
     @Delete
     suspend fun delete(item: Item)
 

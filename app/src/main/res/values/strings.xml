@@ -1,17 +1,19 @@
 <resources>
     <string name="app_name">Shoppy</string>
     <string name="title_home">Home</string>
-    <string name="title_shopping_list">Shopping List</string>
-    <string name="title_inventory">Inventory</string>
-    <string name="add_item_to_shopping_list">Add item</string>
-    <string name="add_item_to_inventory">Add item</string>
-    <string name="search_hint">Search in shopping list</string>
-    <string name="add_article_to_shopping_list">Add article to shopping list</string>
+    <string name="title_grocery_list">Grocery List</string>
+    <string name="title_storage">Storage</string>
+    <string name="add_item_to_grocery_list">Add item</string>
+    <string name="add_item_to_storage">Add item</string>
+    <string name="search_hint">Search in grocery list</string>
+    <string name="add_article_to_grocery_list">Add article to grocery list</string>
+    <string name="add_article_to_storage">Add item to your storage</string>
     <string name="item_name">Item name</string>
     <string name="item_category">Item category</string>
     <string name="add">Add</string>
     <string name="item_successfully_deleted">has been deleted</string>
     <string name="item_successfully_added">has been added</string>
+    <string name="item_successfully_moved">has been moved to storage</string>
     <string name="undo">UNDO</string>
 
     <string name="fruits">fruits</string>
@@ -32,8 +34,16 @@
     <string name="snacks">snacks</string>
     <string name="legume">legume</string>
     <string name="check_button_content_description">Item check button</string>
-    <string name="move_to_inventory_button_content_description">Move item to inventory button</string>
+    <string name="move_to_storage_button_content_description">Move item to storage button</string>
     <string name="empty_state_picture">empty state picture</string>
-    <string name="no_item_in_inventory">Your inventory is empty</string>
-    <string name="no_item_in_shopping_list">Your shopping list is empty</string>
+    <string name="no_item_in_storage">Your storage is empty</string>
+    <string name="no_item_in_grocery_list">Your grocery list is empty</string>
+    <string name="plus_button_content_description">Add one button</string>
+    <string name="remove_button_content_description">Remove one button</string>
+    <string name="move_item_to_storage">Choose the quantity</string>
+    <string name="there_are_already">There are already</string>
+    <string name="in_stock">in your storage</string>
+    <string name="no_item_in_stock">You have none in your storage</string>
+    <string name="no_item_name_error">Enter an item name</string>
+    <string name="no_category_error">Choose a category</string>
 </resources>

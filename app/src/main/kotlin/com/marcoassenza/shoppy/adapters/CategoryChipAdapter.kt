@@ -9,10 +9,10 @@ import com.google.android.material.color.MaterialColors
 import com.marcoassenza.shoppy.databinding.CategoryChipAdapterBinding
 import com.marcoassenza.shoppy.models.Category
 
-class CategoryChipAdapter(private val categoryChipRecyclerViewListener: CategoryChipRecyclerViewListener) :
+class CategoryChipAdapter(private val categoryChipListener: CategoryChipListener) :
     RecyclerView.Adapter<CategoryChipViewHolder>() {
 
-    interface CategoryChipRecyclerViewListener {
+    interface CategoryChipListener {
         fun onCategoryChipClick(category: Category, isChecked: Boolean)
     }
 
@@ -36,7 +36,7 @@ class CategoryChipAdapter(private val categoryChipRecyclerViewListener: Category
         }
 
         holder.binding.chip.setOnCheckedChangeListener { _, isChecked ->
-            categoryChipRecyclerViewListener.onCategoryChipClick(category, isChecked)
+            categoryChipListener.onCategoryChipClick(category, isChecked)
         }
     }
 

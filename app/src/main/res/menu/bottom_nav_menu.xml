@@ -7,13 +7,13 @@
         android:title="@string/title_home" />
 
     <item
-        android:id="@+id/navigation_shopping_list"
+        android:id="@+id/navigation_grocery_list"
         android:icon="@drawable/ic_baseline_shopping_cart_24"
-        android:title="@string/title_shopping_list" />
+        android:title="@string/title_grocery_list" />
 
     <item
-        android:id="@+id/navigation_inventory"
+        android:id="@+id/navigation_storage"
         android:icon="@drawable/ic_baseline_kitchen_24"
-        android:title="@string/title_inventory" />
+        android:title="@string/title_storage" />
 
 </menu>

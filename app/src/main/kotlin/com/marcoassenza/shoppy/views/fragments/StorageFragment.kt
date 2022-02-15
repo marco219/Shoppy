@@ -7,10 +7,11 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.SearchView
 import androidx.fragment.app.Fragment
-import androidx.fragment.app.viewModels
+import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.flowWithLifecycle
 import androidx.lifecycle.lifecycleScope
+import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.StaggeredGridLayoutManager
@@ -18,39 +19,39 @@ import com.google.android.material.floatingactionbutton.ExtendedFloatingActionBu
 import com.google.android.material.snackbar.Snackbar
 import com.marcoassenza.shoppy.R
 import com.marcoassenza.shoppy.adapters.CategoryChipAdapter
-import com.marcoassenza.shoppy.adapters.ShoppingListAdapter
-import com.marcoassenza.shoppy.databinding.FragmentShoppingListBinding
+import com.marcoassenza.shoppy.adapters.StorageAdapter
+import com.marcoassenza.shoppy.databinding.FragmentStorageBinding
 import com.marcoassenza.shoppy.models.Category
 import com.marcoassenza.shoppy.models.Item
-import com.marcoassenza.shoppy.viewmodels.ShoppingListViewModel
+import com.marcoassenza.shoppy.utils.Constant
+import com.marcoassenza.shoppy.viewmodels.GroceryListViewModel
 import com.marcoassenza.shoppy.views.activities.MainActivity
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.flow.collectLatest
-import kotlinx.coroutines.launch
+import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.withContext
 
 @AndroidEntryPoint
-class ShoppingListFragment : Fragment(),
-    ShoppingListAdapter.ShoppingListRecyclerViewListener,
-    CategoryChipAdapter.CategoryChipRecyclerViewListener,
-    AddItemFragment.ValidationButtonListener {
+class StorageFragment : Fragment() {
 
-    private var _binding: FragmentShoppingListBinding? = null
+    private var _binding: FragmentStorageBinding? = null
 
     // This property is only valid between onCreateView and
     // onDestroyView.
     private val binding get() = _binding!!
-    private val shoppingListViewModel: ShoppingListViewModel by viewModels()
-    private val shoppingListAdapter = ShoppingListAdapter(this)
-    private val categoryListAdapter = CategoryChipAdapter(this)
+
+    private val groceryListViewModel: GroceryListViewModel by activityViewModels()
+    private lateinit var storageAdapter: StorageAdapter
+    private lateinit var categoryListAdapter: CategoryChipAdapter
 
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        _binding = FragmentShoppingListBinding.inflate(inflater, container, false)
+        _binding = FragmentStorageBinding.inflate(inflater, container, false)
+
         return binding.root
     }
 
@@ -61,6 +62,7 @@ class ShoppingListFragment : Fragment(),
         setupItemRecyclerViewObserver()
         setupChipRecyclerViewObserver()
         setupSearchView()
+        setupAddedItemObserver()
     }
 
     override fun onResume() {
@@ -74,38 +76,50 @@ class ShoppingListFragment : Fragment(),
     }
 
     private fun setupChipRecyclerViewObserver() {
-        lifecycleScope.launch {
-            shoppingListViewModel.itemList
-                .flowWithLifecycle(lifecycle, Lifecycle.State.STARTED)
-                .collectLatest { list ->
-                    withContext(Dispatchers.Main) {
-                        categoryListAdapter.setCategoryList(
-                            list.map { it.category }
-                                .distinct())
-                        binding.chipRecyclerview.smoothScrollToPosition(0)
-                    }
+        groceryListViewModel.storageCategoryList
+            .onEach {
+                withContext(Dispatchers.Main) {
+                    categoryListAdapter.setCategoryList(it)
+                    binding.chipRecyclerview.smoothScrollToPosition(0)
                 }
-        }
+            }
+            .flowWithLifecycle(lifecycle, Lifecycle.State.STARTED)
+            .launchIn(lifecycleScope)
     }
 
     private fun setupItemRecyclerViewObserver() {
-        lifecycleScope.launch {
-            shoppingListViewModel.itemList
-                .flowWithLifecycle(lifecycle, Lifecycle.State.STARTED)
-                .collectLatest { list ->
-                    withContext(Dispatchers.Main) {
-                        if (list.isEmpty()) setEmptyStateViewVisible(true)
-                        else setEmptyStateViewVisible(false)
-                        shoppingListAdapter.setShoppingList(list)
-                        binding.itemRecyclerview.smoothScrollToPosition(0)
-                    }
+        groceryListViewModel.storageList
+            .flowWithLifecycle(lifecycle, Lifecycle.State.STARTED)
+            .onEach {
+                withContext(Dispatchers.Main) {
+                    if (it.isEmpty()) setEmptyStateViewVisible(true)
+                    else setEmptyStateViewVisible(false)
+                    val isFirstItemChanged = storageAdapter.setStorageList(it)
+                    if (isFirstItemChanged) binding.itemRecyclerview.smoothScrollToPosition(0)
                 }
-        }
+            }
+            .launchIn(lifecycleScope)
     }
 
     private fun setupItemRecyclerView() {
+        storageAdapter =
+            StorageAdapter(object : StorageAdapter.StorageItemListener {
+                override fun onItemCardClick(item: Item) {}
+
+                override fun onItemMinusButtonClick(item: Item) {
+                    if (item.stockQuantity == 1)
+                        groceryListViewModel.resetStockQuantityAndMoveToGroceryList(item)
+                    else groceryListViewModel.updateStockQuantity(item, -1)
+                }
+
+                override fun onItemPlusButtonClick(item: Item) {
+                    if (item.stockQuantity == Constant.MAX_ITEM_IN_STORAGE) return
+                    groceryListViewModel.updateStockQuantity(item, 1)
+                }
+            })
+
         binding.itemRecyclerview.apply {
-            adapter = shoppingListAdapter
+            adapter = storageAdapter
             layoutManager = activity?.resources?.configuration?.orientation.let {
                 when (it) {
                     Configuration.ORIENTATION_LANDSCAPE -> StaggeredGridLayoutManager(
@@ -122,6 +136,13 @@ class ShoppingListFragment : Fragment(),
     }
 
     private fun setupChipRecyclerView() {
+        categoryListAdapter =
+            CategoryChipAdapter(object : CategoryChipAdapter.CategoryChipListener {
+                override fun onCategoryChipClick(category: Category, isChecked: Boolean) {
+                    storageAdapter.filter(category, isChecked)
+                }
+            })
+
         binding.chipRecyclerview.apply {
             adapter = categoryListAdapter
             layoutManager = LinearLayoutManager(
@@ -133,18 +154,18 @@ class ShoppingListFragment : Fragment(),
     }
 
     private fun setupSearchView() {
-        shoppingListAdapter.filter(binding.searchBar.query.toString().lowercase())
+        storageAdapter.filter(binding.searchBar.query.toString().lowercase())
         binding.searchBar.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
             override fun onQueryTextSubmit(searchText: String?): Boolean {
                 searchText?.let {
-                    shoppingListAdapter.filter(searchText.lowercase())
+                    storageAdapter.filter(searchText.lowercase())
                 }
                 return false
             }
 
             override fun onQueryTextChange(searchText: String?): Boolean {
                 searchText?.let {
-                    shoppingListAdapter.filter(searchText.lowercase())
+                    storageAdapter.filter(searchText.lowercase())
                 }
                 return true
             }
@@ -155,16 +176,37 @@ class ShoppingListFragment : Fragment(),
         activity?.let { activity ->
             val fab = MainActivity.mainFabCustomizer(
                 activity,
-                R.string.add_item_to_shopping_list,
-                R.drawable.ic_baseline_add_shopping_cart_24
-            )
-            {
-                val bottomSheetDialogFragment = AddItemFragment(this)
-                bottomSheetDialogFragment.show(parentFragmentManager, AddItemFragment.TAG)
-            }
-
+                R.string.add_item_to_storage,
+                R.drawable.ic_baseline_add_24
+            ) { showAddItemBottomSheet() }
             enableShowHideFab(fab)
         }
+    }
+
+    private fun setupAddedItemObserver() {
+        groceryListViewModel.addedItem
+            .flowWithLifecycle(lifecycle, Lifecycle.State.STARTED)
+            .onEach { item ->
+                item?.let {
+                    showUndoAddItemSnackBar(item)
+                }
+            }
+            .launchIn(lifecycleScope)
+    }
+
+    private fun showAddItemBottomSheet() {
+        findNavController().navigate(StorageFragmentDirections.navigateToAddItemToStorage())
+    }
+
+    private fun showUndoAddItemSnackBar(item: Item) {
+        Snackbar.make(
+            binding.root.rootView,
+            item.displayName.plus(" ")
+                .plus(getString(R.string.item_successfully_added)),
+            Snackbar.LENGTH_LONG
+        ).apply {
+            setAction(R.string.undo) { groceryListViewModel.undoAddItem(item) }
+        }.show()
     }
 
     private fun enableShowHideFab(fab: ExtendedFloatingActionButton?) {
@@ -186,39 +228,5 @@ class ShoppingListFragment : Fragment(),
             binding.emptyStateImage.visibility = View.GONE
             binding.emptyStateText.visibility = View.GONE
         }
-    }
-
-    override fun onItemCardClick(item: Item) {}
-
-    override fun onItemCardLongClick(item: Item) {}
-
-    override fun onItemCheckButtonClick(item: Item) {
-        lifecycleScope.launch {
-            shoppingListViewModel.deleteItem(item)
-        }
-        Snackbar.make(
-            binding.root.rootView,
-            item.displayName.plus(" ").plus(getString(R.string.item_successfully_deleted)),
-            Snackbar.LENGTH_LONG
-        )
-            .apply {
-                setAction(R.string.undo) { shoppingListViewModel.insertNewItem(item) }
-            }.show()
-    }
-
-    override fun onItemInventoryButtonClick(item: Item) {}
-
-    override fun onValidate(item: Item) {
-        Snackbar.make(
-            binding.root.rootView,
-            item.displayName.plus(" ").plus(getString(R.string.item_successfully_added)),
-            Snackbar.LENGTH_LONG
-        ).apply {
-            setAction(R.string.undo) { shoppingListViewModel.undoItem(item) }
-        }.show()
-    }
-
-    override fun onCategoryChipClick(category: Category, isChecked: Boolean) {
-        shoppingListAdapter.filter(category, isChecked)
     }
 }

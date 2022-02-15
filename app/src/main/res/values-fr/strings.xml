@@ -2,12 +2,13 @@
 <resources>
     <string name="app_name">Shoppy</string>
     <string name="title_home">Accueil</string>
-    <string name="title_shopping_list">Liste de course</string>
-    <string name="title_inventory">Inventaire</string>
-    <string name="add_item_to_shopping_list">Ajouter article</string>
-    <string name="add_item_to_inventory">Ajouter article</string>
+    <string name="title_grocery_list">Liste de course</string>
+    <string name="title_storage">Stock</string>
+    <string name="add_item_to_grocery_list">Ajouter article</string>
+    <string name="add_item_to_storage">Ajouter article</string>
     <string name="search_hint">Rechercher dans la liste de course</string>
-    <string name="add_article_to_shopping_list">Ajouter un article à la liste</string>
+    <string name="add_article_to_grocery_list">Ajouter un article à la liste</string>
+    <string name="add_article_to_storage">Ajouter un article dans le stock</string>
     <string name="item_name">Nom</string>
     <string name="item_category">Catégorie</string>
     <string name="add">Ajouter</string>
@@ -34,8 +35,17 @@
     <string name="toiletries">produits de toilette</string>
     <string name="household">produits ménagers</string>
     <string name="check_button_content_description">Boutton validation article</string>
-    <string name="move_to_inventory_button_content_description">Boutton déplacer article dans l\'inventaire</string>
+    <string name="move_to_storage_button_content_description">Boutton déplacer article dans le stockage</string>
     <string name="empty_state_picture">Image état vide</string>
-    <string name="no_item_in_inventory">Ton inventaire est vide</string>
-    <string name="no_item_in_shopping_list">Ta liste de course est vide</string>
+    <string name="no_item_in_storage">Ton stock est vide</string>
+    <string name="no_item_in_grocery_list">Ta liste de course est vide</string>
+    <string name="plus_button_content_description">Ajoute un</string>
+    <string name="remove_button_content_description">Retire un</string>
+    <string name="move_item_to_storage">Choisis la quantité</string>
+    <string name="there_are_already">Il y a déjà</string>
+    <string name="in_stock">en stock</string>
+    <string name="no_item_in_stock">Tu n\'en a pas dans ton stock</string>
+    <string name="no_item_name_error">Saisis un nom</string>
+    <string name="no_category_error">Choisis une catégorie</string>
+    <string name="item_successfully_moved">a été déplacé dans le stock</string>
 </resources>

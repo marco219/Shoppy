@@ -1,4 +1,4 @@
-package com.marcoassenza.shoppy.adapters
+package com.marcoassenza.shoppy.adapters.helpers
 
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView

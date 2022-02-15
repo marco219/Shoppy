@@ -10,6 +10,7 @@ data class Item(
     @PrimaryKey(autoGenerate = true) var id: Long = 0,
     val name: String,
     @Embedded val category: Category,
+    val isInGroceryList: Boolean = true,
     val stockQuantity: Int = 0
 ) : Serializable {
     val displayName: String

@@ -1,4 +1,4 @@
-package com.marcoassenza.shoppy.helpers
+package com.marcoassenza.shoppy.data.helpers
 
 class DataWithStatus<T>(
     val status: Status,

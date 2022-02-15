@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="utf-8"?>
+<com.google.android.material.card.MaterialCardView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/card"
+    style="?attr/materialCardViewFilledStyle"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_margin="@dimen/small_margin"
+    android:checkable="true"
+    android:clickable="true"
+    android:focusable="true"
+    android:hapticFeedbackEnabled="true"
+    app:layout_constraintBottom_toBottomOf="parent"
+    app:layout_constraintStart_toStartOf="parent">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+
+        <TextView
+            android:id="@+id/card_title"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="@dimen/tiny_margin"
+            android:gravity="center_horizontal"
+            android:maxLines="3"
+            android:textAppearance="?attr/textAppearanceTitleMedium" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="@dimen/tiny_margin"
+            android:gravity="center_horizontal"
+            android:orientation="horizontal">
+
+            <com.google.android.material.floatingactionbutton.FloatingActionButton
+                android:id="@+id/item_check_button"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_margin="@dimen/tiny_margin"
+                android:backgroundTint="@color/md_theme_onSecondary"
+                android:contentDescription="@string/check_button_content_description"
+                android:hapticFeedbackEnabled="true"
+                app:srcCompat="@drawable/ic_baseline_check_24"
+                app:fabSize="mini"
+                app:tint="@color/md_theme_onSecondaryContainer" />
+
+            <Space
+                android:layout_width="@dimen/small_margin"
+                android:layout_height="wrap_content" />
+
+
+            <com.google.android.material.floatingactionbutton.FloatingActionButton
+                android:id="@+id/item_storage_button"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_margin="@dimen/tiny_margin"
+                android:backgroundTint="@color/md_theme_tertiaryContainer"
+                android:contentDescription="@string/move_to_storage_button_content_description"
+                android:hapticFeedbackEnabled="true"
+                app:srcCompat="@drawable/ic_baseline_kitchen_24"
+                app:fabSize="mini"
+                app:tint="@color/md_theme_tertiary" />
+        </LinearLayout>
+    </LinearLayout>
+
+</com.google.android.material.card.MaterialCardView>

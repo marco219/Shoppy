@@ -3,7 +3,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/mobile_navigation"
-    app:startDestination="@+id/navigation_shopping_list">
+    app:startDestination="@+id/navigation_grocery_list">
 
     <fragment
         android:id="@+id/navigation_home"
@@ -12,14 +12,43 @@
         tools:layout="@layout/fragment_home" />
 
     <fragment
-        android:id="@+id/navigation_shopping_list"
-        android:name="com.marcoassenza.shoppy.views.fragments.ShoppingListFragment"
-        android:label="@string/title_shopping_list"
-        tools:layout="@layout/fragment_shopping_list" />
+        android:id="@+id/navigation_grocery_list"
+        android:name="com.marcoassenza.shoppy.views.fragments.GroceryListFragment"
+        android:label="@string/title_grocery_list"
+        tools:layout="@layout/fragment_grocery_list">
+        <action
+            android:id="@+id/navigate_to_add_item_to_grocery_list"
+            app:destination="@id/navigation_add_item_to_grocery_list" />
+        <action
+            android:id="@+id/navigate_to_move_item_to_storage"
+            app:destination="@id/navigation_move_item_to_storage" />
+    </fragment>
 
     <fragment
-        android:id="@+id/navigation_inventory"
-        android:name="com.marcoassenza.shoppy.views.fragments.ShoppingListFragment"
-        android:label="@string/title_inventory"
-        tools:layout="@layout/fragment_shopping_list" />
+        android:id="@+id/navigation_storage"
+        android:name="com.marcoassenza.shoppy.views.fragments.StorageFragment"
+        android:label="@string/title_storage"
+        tools:layout="@layout/fragment_storage">
+        <action
+            android:id="@+id/navigate_to_add_item_to_storage"
+            app:destination="@id/navigation_add_item_to_storage" />
+    </fragment>
+
+    <dialog
+        android:id="@+id/navigation_add_item_to_grocery_list"
+        android:name="com.marcoassenza.shoppy.views.fragments.bottomsheets.AddItemToGroceryListFragment"
+        android:label="@string/add_article_to_grocery_list"
+        tools:layout="@layout/fragment_add_item_to_grocery_list" />
+
+    <dialog
+        android:id="@+id/navigation_move_item_to_storage"
+        android:name="com.marcoassenza.shoppy.views.fragments.bottomsheets.MoveItemToStorageFragment"
+        android:label="@string/move_item_to_storage"
+        tools:layout="@layout/fragment_move_item_to_storage" />
+
+    <dialog
+        android:id="@+id/navigation_add_item_to_storage"
+        android:name="com.marcoassenza.shoppy.views.fragments.bottomsheets.AddItemToStorageFragment"
+        android:label="@string/add_item_to_storage"
+        tools:layout="@layout/fragment_add_item_to_storage" />
 </navigation>
