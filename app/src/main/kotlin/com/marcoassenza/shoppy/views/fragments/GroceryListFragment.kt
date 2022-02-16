@@ -1,6 +1,5 @@
 package com.marcoassenza.shoppy.views.fragments
 
-import android.content.res.Configuration
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -12,11 +11,6 @@ import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.flowWithLifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
-import androidx.recyclerview.widget.LinearLayoutManager
-import androidx.recyclerview.widget.RecyclerView
-import androidx.recyclerview.widget.StaggeredGridLayoutManager
-import com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton
-import com.google.android.material.snackbar.Snackbar
 import com.marcoassenza.shoppy.R
 import com.marcoassenza.shoppy.adapters.CategoryChipAdapter
 import com.marcoassenza.shoppy.adapters.GroceryListAdapter
@@ -25,6 +19,10 @@ import com.marcoassenza.shoppy.models.Category
 import com.marcoassenza.shoppy.models.Item
 import com.marcoassenza.shoppy.viewmodels.GroceryListViewModel
 import com.marcoassenza.shoppy.views.activities.MainActivity
+import com.marcoassenza.shoppy.views.helpers.enableShowHideExtendedFab
+import com.marcoassenza.shoppy.views.helpers.setDynamicStaggeredGridLayout
+import com.marcoassenza.shoppy.views.helpers.setLinearLayout
+import com.marcoassenza.shoppy.views.helpers.showUndoActionSnackbar
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.launchIn
@@ -116,21 +114,7 @@ class GroceryListFragment : Fragment() {
                 }
             })
 
-        binding.itemRecyclerview.apply {
-            adapter = groceryListAdapter
-            layoutManager = activity?.resources?.configuration?.orientation.let {
-                when (it) {
-                    Configuration.ORIENTATION_LANDSCAPE -> StaggeredGridLayoutManager(
-                        3,
-                        StaggeredGridLayoutManager.VERTICAL
-                    )
-                    else -> StaggeredGridLayoutManager(
-                        2,
-                        StaggeredGridLayoutManager.VERTICAL
-                    )
-                }
-            }
-        }
+        binding.itemRecyclerview.setDynamicStaggeredGridLayout(groceryListAdapter, activity)
     }
 
     private fun setupChipRecyclerView() {
@@ -141,14 +125,7 @@ class GroceryListFragment : Fragment() {
                 }
             })
 
-        binding.chipRecyclerview.apply {
-            adapter = categoryListAdapter
-            layoutManager = LinearLayoutManager(
-                requireContext(),
-                LinearLayoutManager.HORIZONTAL,
-                false
-            )
-        }
+        binding.chipRecyclerview.setLinearLayout(categoryListAdapter, activity)
     }
 
     private fun setupSearchView() {
@@ -179,19 +156,8 @@ class GroceryListFragment : Fragment() {
             ) {
                 showAddItemBottomSheet()
             }
-            enableShowHideFab(fab)
+            binding.itemRecyclerview.enableShowHideExtendedFab(fab)
         }
-    }
-
-    private fun enableShowHideFab(fab: ExtendedFloatingActionButton?) {
-        binding.itemRecyclerview.addOnScrollListener(object : RecyclerView.OnScrollListener() {
-            override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
-                if (dy > 0)
-                    fab?.hide()
-                else if (dy < 0)
-                    fab?.show()
-            }
-        })
     }
 
     private fun showMoveToStorageBottomSheet(item: Item) {
@@ -226,37 +192,24 @@ class GroceryListFragment : Fragment() {
     }
 
     private fun showUndoMoveItemSnackBar(item: Item) {
-        Snackbar.make(
-            binding.root.rootView,
+        binding.root.rootView.showUndoActionSnackbar(
             item.displayName.plus(" ")
-                .plus(getString(R.string.item_successfully_moved)),
-            Snackbar.LENGTH_LONG
-        ).apply {
-            setAction(R.string.undo) { groceryListViewModel.undoMoveItem(item) }
-        }.show()
+                .plus(getString(R.string.item_successfully_moved_to_storage))
+        ) { groceryListViewModel.undoMoveItemToStorage(item) }
     }
 
     private fun showUndoAddItemSnackBar(item: Item) {
-        Snackbar.make(
-            binding.root.rootView,
+        binding.root.rootView.showUndoActionSnackbar(
             item.displayName.plus(" ")
-                .plus(getString(R.string.item_successfully_added)),
-            Snackbar.LENGTH_LONG
-        ).apply {
-            setAction(R.string.undo) { groceryListViewModel.undoAddItem(item) }
-        }.show()
+                .plus(getString(R.string.item_successfully_added))
+        ) { groceryListViewModel.undoAddItem(item) }
     }
 
     private fun showUndoDeleteItemSnackBar(item: Item) {
-        Snackbar.make(
-            binding.root.rootView,
+        binding.root.rootView.showUndoActionSnackbar(
             item.displayName.plus(" ")
-                .plus(getString(R.string.item_successfully_deleted)),
-            Snackbar.LENGTH_LONG
-        )
-            .apply {
-                setAction(R.string.undo) { groceryListViewModel.undoDeleteItem(item) }
-            }.show()
+                .plus(getString(R.string.item_successfully_deleted))
+        ) { groceryListViewModel.undoDeleteItem(item) }
     }
 
     private fun setEmptyStateViewVisible(isVisible: Boolean) {

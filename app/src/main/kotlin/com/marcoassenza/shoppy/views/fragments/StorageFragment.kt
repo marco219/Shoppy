@@ -1,6 +1,5 @@
 package com.marcoassenza.shoppy.views.fragments
 
-import android.content.res.Configuration
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -12,11 +11,6 @@ import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.flowWithLifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
-import androidx.recyclerview.widget.LinearLayoutManager
-import androidx.recyclerview.widget.RecyclerView
-import androidx.recyclerview.widget.StaggeredGridLayoutManager
-import com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton
-import com.google.android.material.snackbar.Snackbar
 import com.marcoassenza.shoppy.R
 import com.marcoassenza.shoppy.adapters.CategoryChipAdapter
 import com.marcoassenza.shoppy.adapters.StorageAdapter
@@ -26,6 +20,10 @@ import com.marcoassenza.shoppy.models.Item
 import com.marcoassenza.shoppy.utils.Constant
 import com.marcoassenza.shoppy.viewmodels.GroceryListViewModel
 import com.marcoassenza.shoppy.views.activities.MainActivity
+import com.marcoassenza.shoppy.views.helpers.enableShowHideExtendedFab
+import com.marcoassenza.shoppy.views.helpers.setDynamicStaggeredGridLayout
+import com.marcoassenza.shoppy.views.helpers.setLinearLayout
+import com.marcoassenza.shoppy.views.helpers.showUndoActionSnackbar
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.launchIn
@@ -77,13 +75,13 @@ class StorageFragment : Fragment() {
 
     private fun setupChipRecyclerViewObserver() {
         groceryListViewModel.storageCategoryList
+            .flowWithLifecycle(lifecycle, Lifecycle.State.STARTED)
             .onEach {
                 withContext(Dispatchers.Main) {
                     categoryListAdapter.setCategoryList(it)
                     binding.chipRecyclerview.smoothScrollToPosition(0)
                 }
             }
-            .flowWithLifecycle(lifecycle, Lifecycle.State.STARTED)
             .launchIn(lifecycleScope)
     }
 
@@ -107,9 +105,10 @@ class StorageFragment : Fragment() {
                 override fun onItemCardClick(item: Item) {}
 
                 override fun onItemMinusButtonClick(item: Item) {
-                    if (item.stockQuantity == 1)
+                    if (item.stockQuantity == 1) {
                         groceryListViewModel.resetStockQuantityAndMoveToGroceryList(item)
-                    else groceryListViewModel.updateStockQuantity(item, -1)
+                        showUndoMoveItemSnackBar(item)
+                    } else groceryListViewModel.updateStockQuantity(item, -1)
                 }
 
                 override fun onItemPlusButtonClick(item: Item) {
@@ -118,21 +117,7 @@ class StorageFragment : Fragment() {
                 }
             })
 
-        binding.itemRecyclerview.apply {
-            adapter = storageAdapter
-            layoutManager = activity?.resources?.configuration?.orientation.let {
-                when (it) {
-                    Configuration.ORIENTATION_LANDSCAPE -> StaggeredGridLayoutManager(
-                        3,
-                        StaggeredGridLayoutManager.VERTICAL
-                    )
-                    else -> StaggeredGridLayoutManager(
-                        2,
-                        StaggeredGridLayoutManager.VERTICAL
-                    )
-                }
-            }
-        }
+        binding.itemRecyclerview.setDynamicStaggeredGridLayout(storageAdapter, activity)
     }
 
     private fun setupChipRecyclerView() {
@@ -143,14 +128,7 @@ class StorageFragment : Fragment() {
                 }
             })
 
-        binding.chipRecyclerview.apply {
-            adapter = categoryListAdapter
-            layoutManager = LinearLayoutManager(
-                requireContext(),
-                LinearLayoutManager.HORIZONTAL,
-                false
-            )
-        }
+        binding.chipRecyclerview.setLinearLayout(categoryListAdapter, activity)
     }
 
     private fun setupSearchView() {
@@ -179,7 +157,8 @@ class StorageFragment : Fragment() {
                 R.string.add_item_to_storage,
                 R.drawable.ic_baseline_add_24
             ) { showAddItemBottomSheet() }
-            enableShowHideFab(fab)
+
+            binding.itemRecyclerview.enableShowHideExtendedFab(fab)
         }
     }
 
@@ -199,25 +178,17 @@ class StorageFragment : Fragment() {
     }
 
     private fun showUndoAddItemSnackBar(item: Item) {
-        Snackbar.make(
-            binding.root.rootView,
+        binding.root.rootView.showUndoActionSnackbar(
             item.displayName.plus(" ")
-                .plus(getString(R.string.item_successfully_added)),
-            Snackbar.LENGTH_LONG
-        ).apply {
-            setAction(R.string.undo) { groceryListViewModel.undoAddItem(item) }
-        }.show()
+                .plus(getString(R.string.item_successfully_added))
+        ) { groceryListViewModel.undoAddItem(item) }
     }
 
-    private fun enableShowHideFab(fab: ExtendedFloatingActionButton?) {
-        binding.itemRecyclerview.addOnScrollListener(object : RecyclerView.OnScrollListener() {
-            override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
-                if (dy > 0)
-                    fab?.hide()
-                else if (dy < 0)
-                    fab?.show()
-            }
-        })
+    private fun showUndoMoveItemSnackBar(item: Item) {
+        binding.root.rootView.showUndoActionSnackbar(
+            item.displayName.plus(" ")
+                .plus(getString(R.string.item_successfully_moved_to_grocery_list))
+        ) { groceryListViewModel.undoMoveItemToGroceryList(item) }
     }
 
     private fun setEmptyStateViewVisible(isVisible: Boolean) {

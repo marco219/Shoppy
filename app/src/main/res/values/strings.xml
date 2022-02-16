@@ -13,7 +13,8 @@
     <string name="add">Add</string>
     <string name="item_successfully_deleted">has been deleted</string>
     <string name="item_successfully_added">has been added</string>
-    <string name="item_successfully_moved">has been moved to storage</string>
+    <string name="item_successfully_moved_to_storage">has been moved to storage</string>
+    <string name="item_successfully_moved_to_grocery_list">has been moved to your grocery list</string>
     <string name="undo">UNDO</string>
 
     <string name="fruits">fruits</string>

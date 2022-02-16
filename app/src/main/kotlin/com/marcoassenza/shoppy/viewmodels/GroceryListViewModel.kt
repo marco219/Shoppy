@@ -90,9 +90,15 @@ class GroceryListViewModel @Inject constructor(
         }
     }
 
-    fun undoMoveItem(item: Item) {
+    fun undoMoveItemToStorage(item: Item) {
         viewModelScope.launch {
             itemRepository.resetStockQuantityAndMoveToGroceryList(item)
+        }
+    }
+
+    fun undoMoveItemToGroceryList(item: Item) {
+        viewModelScope.launch {
+            itemRepository.updateStockQuantityAndMoveToStorage(item, 1)
         }
     }
 
