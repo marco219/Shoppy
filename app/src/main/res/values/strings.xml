@@ -47,4 +47,6 @@
     <string name="no_item_in_stock">You have none in your storage</string>
     <string name="no_item_name_error">Enter an item name</string>
     <string name="no_category_error">Choose a category</string>
+    <string name="no_internet">You are not connected to internet</string>
+    <string name="back_online">You are online</string>
 </resources>

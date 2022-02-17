@@ -26,3 +26,24 @@ fun View.showUndoActionSnackbar(text: String, action: () -> Unit) {
         setAction(R.string.undo) { action.invoke() }
     }.show()
 }
+
+fun View.showLongSnackbar(text: String) {
+    Snackbar.make(
+        this,
+        text,
+        Snackbar.LENGTH_LONG
+    ).apply {
+        this.setBackgroundTint(resources.getColor(R.color.seed, context.theme))
+    }.show()
+}
+
+fun View.showIndefiniteSnackbar(text: String): Snackbar {
+    return Snackbar.make(
+        this,
+        text,
+        Snackbar.LENGTH_INDEFINITE
+    ).apply {
+        this.setBackgroundTint(resources.getColor(R.color.error, context.theme))
+        show()
+    }
+}

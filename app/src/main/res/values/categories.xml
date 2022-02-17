@@ -21,6 +21,7 @@
     </integer-array>
 
     <integer-array name="category_name_array">
+        <item>@string/others</item>
         <item>@string/vegetables</item>
         <item>@string/fruits</item>
         <item>@string/legume</item>
@@ -37,10 +38,10 @@
         <item>@string/drinks</item>
         <item>@string/toiletries</item>
         <item>@string/household</item>
-        <item>@string/others</item>
     </integer-array>
 
     <integer-array name="category_color_array">
+        <item>@color/md_deep_purple_800</item>
         <item>@color/md_green_800</item>
         <item>@color/md_orange_800</item>
         <item>@color/md_deep_orange_800</item>
@@ -57,6 +58,5 @@
         <item>@color/md_grey_800</item>
         <item>@color/md_cyan_800</item>
         <item>@color/md_indigo_800</item>
-        <item>@color/md_deep_purple_800</item>
     </integer-array>
 </resources>

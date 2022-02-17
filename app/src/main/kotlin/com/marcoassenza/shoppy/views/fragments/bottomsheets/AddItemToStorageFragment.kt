@@ -14,7 +14,7 @@ import com.marcoassenza.shoppy.adapters.DropDownMenuAdapter
 import com.marcoassenza.shoppy.databinding.FragmentAddItemToStorageBinding
 import com.marcoassenza.shoppy.models.Category
 import com.marcoassenza.shoppy.models.Item
-import com.marcoassenza.shoppy.viewmodels.GroceryListViewModel
+import com.marcoassenza.shoppy.viewmodels.ItemsViewModel
 import com.marcoassenza.shoppy.views.helpers.hideKeyboard
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.Dispatchers
@@ -30,7 +30,7 @@ class AddItemToStorageFragment : BottomSheetDialogFragment() {
     // This property is only valid between onCreateView and
     // onDestroyView.
     private val binding get() = _binding!!
-    private val groceryListViewModel: GroceryListViewModel by activityViewModels()
+    private val itemsViewModel: ItemsViewModel by activityViewModels()
 
     private lateinit var selectedCategory: Category
 
@@ -51,7 +51,7 @@ class AddItemToStorageFragment : BottomSheetDialogFragment() {
     }
 
     private fun setupDropdownMenuObserver() {
-        groceryListViewModel.defaultCategoryList
+        itemsViewModel.defaultCategoryList
             .flowWithLifecycle(lifecycle, Lifecycle.State.STARTED)
             .onEach { list ->
                 list?.let {
@@ -75,7 +75,7 @@ class AddItemToStorageFragment : BottomSheetDialogFragment() {
 
     private fun setupValidationButton() {
         binding.validateButton.setOnClickListener {
-            val itemName = binding.itemNameInput.text.toString()
+            val itemName = binding.itemNameInput.text.toString().lowercase()
             val itemQuantity = binding.stockQuantityText.text.toString().toInt()
 
             when {
@@ -96,7 +96,7 @@ class AddItemToStorageFragment : BottomSheetDialogFragment() {
                         isInGroceryList = false,
                         stockQuantity = itemQuantity
                     )
-                    groceryListViewModel.insertNewItem(item)
+                    itemsViewModel.insertNewItem(item)
                     dismiss()
                 }
             }

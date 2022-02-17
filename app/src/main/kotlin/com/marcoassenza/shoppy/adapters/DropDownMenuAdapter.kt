@@ -28,7 +28,7 @@ class DropDownMenuAdapter(
     }
 
     override fun getItem(position: Int): Any {
-        return categoryList[position].displayName
+        return categoryList[position].categoryDisplayName
     }
 
     override fun getItemId(position: Int): Long {
@@ -42,7 +42,8 @@ class DropDownMenuAdapter(
     @SuppressLint("ViewHolder")
     override fun getView(position: Int, convertView: View?, parent: ViewGroup?): View {
         val rowView = inflater.inflate(resource, parent, false)
-        rowView.findViewById<TextView>(R.id.text_view).text = categoryList[position].displayName
+        rowView.findViewById<TextView>(R.id.text_view).text =
+            categoryList[position].categoryDisplayName
         return rowView
     }
 

@@ -12,7 +12,7 @@ import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import com.marcoassenza.shoppy.R
 import com.marcoassenza.shoppy.databinding.FragmentMoveItemToStorageBinding
 import com.marcoassenza.shoppy.models.Item
-import com.marcoassenza.shoppy.viewmodels.GroceryListViewModel
+import com.marcoassenza.shoppy.viewmodels.ItemsViewModel
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
@@ -25,7 +25,7 @@ class MoveItemToStorageFragment : BottomSheetDialogFragment() {
     // This property is only valid between onCreateView and
     // onDestroyView.
     private val binding get() = _binding!!
-    private val groceryListViewModel: GroceryListViewModel by activityViewModels()
+    private val itemsViewModel: ItemsViewModel by activityViewModels()
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -42,7 +42,7 @@ class MoveItemToStorageFragment : BottomSheetDialogFragment() {
     }
 
     private fun setupObserverAndView() {
-        groceryListViewModel.toBeTreatedItem
+        itemsViewModel.toBeTreatedItem
             .flowWithLifecycle(lifecycle, Lifecycle.State.STARTED)
             .onEach { item ->
                 item?.let {
@@ -72,7 +72,7 @@ class MoveItemToStorageFragment : BottomSheetDialogFragment() {
         binding.validateButton.setOnClickListener {
             val quantityToAdd = binding.stockQuantityText.text.toString().toInt()
             if (quantityToAdd > 0) {
-                groceryListViewModel.updateStockQuantityAndMoveToStorage(item, quantityToAdd)
+                itemsViewModel.updateStockQuantityAndMoveToStorage(item, quantityToAdd)
                 dismiss()
             }
         }

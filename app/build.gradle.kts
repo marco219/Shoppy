@@ -3,6 +3,7 @@ plugins {
     kotlin("kapt")
     id("com.android.application")
     id("dagger.hilt.android.plugin")
+    id("com.google.gms.google-services")
     id("androidx.navigation.safeargs.kotlin")
 }
 
@@ -59,6 +60,7 @@ dependencies {
 
     //hilt
     implementation("com.google.dagger:hilt-android:${Versions.hilt}")
+    implementation("com.google.firebase:firebase-common-ktx:20.0.0")
     kapt("com.google.dagger:hilt-android-compiler:${Versions.hilt}")
 
     //room
@@ -66,16 +68,17 @@ dependencies {
     implementation("androidx.room:room-runtime:${Versions.room}")
     implementation("androidx.room:room-ktx:${Versions.room}")
 
-    //retrofit
-    implementation("com.squareup.retrofit2:retrofit:${Versions.retrofit}")
-    implementation("com.squareup.retrofit2:converter-gson:${Versions.retrofit}")
-
     //coroutines
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:${Versions.kotlinxCoroutines}")
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:${Versions.kotlinxCoroutines}")
 
-    //gson
-    implementation("com.google.code.gson:gson:${Versions.gson}")
+    //firebase
+    implementation("com.google.firebase:firebase-database-ktx:${Versions.firebase}")
+
+    implementation("com.google.android.gms:play-services-auth:${Versions.firebase}")
+
+    //datastore
+    implementation("androidx.datastore:datastore-preferences:${Versions.datastore}")
 
     testImplementation("junit:junit:${Versions.junit}")
     androidTestImplementation("androidx.test.ext:junit:${Versions.extJunit}")

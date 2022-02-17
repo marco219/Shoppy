@@ -49,4 +49,6 @@
     <string name="no_category_error">Choisis une catégorie</string>
     <string name="item_successfully_moved_to_storage">a été déplacé dans le stock</string>
     <string name="item_successfully_moved_to_grocery_list">a été déplacé dans la liste de course</string>
+    <string name="no_internet">Pas de connexion internet. Auncune modification n\'est possible hors ligne.</string>
+    <string name="back_online">Connexion rétablie</string>
 </resources>

@@ -26,7 +26,7 @@ class CategoryChipAdapter(private val categoryChipListener: CategoryChipListener
 
     override fun onBindViewHolder(holder: CategoryChipViewHolder, position: Int) {
         val category = categoryList[position]
-        holder.binding.chip.text = category.displayName
+        holder.binding.chip.text = category.categoryDisplayName
         category.color.let {
             val isColorLight = MaterialColors.isColorLight(it)
             if (isColorLight) holder.binding.chip.setTextColor(Color.BLACK)

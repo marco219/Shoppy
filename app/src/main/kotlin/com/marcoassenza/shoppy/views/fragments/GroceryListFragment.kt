@@ -11,18 +11,17 @@ import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.flowWithLifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
+import com.google.android.material.snackbar.Snackbar
 import com.marcoassenza.shoppy.R
 import com.marcoassenza.shoppy.adapters.CategoryChipAdapter
 import com.marcoassenza.shoppy.adapters.GroceryListAdapter
 import com.marcoassenza.shoppy.databinding.FragmentGroceryListBinding
 import com.marcoassenza.shoppy.models.Category
 import com.marcoassenza.shoppy.models.Item
-import com.marcoassenza.shoppy.viewmodels.GroceryListViewModel
-import com.marcoassenza.shoppy.views.activities.MainActivity
-import com.marcoassenza.shoppy.views.helpers.enableShowHideExtendedFab
-import com.marcoassenza.shoppy.views.helpers.setDynamicStaggeredGridLayout
-import com.marcoassenza.shoppy.views.helpers.setLinearLayout
-import com.marcoassenza.shoppy.views.helpers.showUndoActionSnackbar
+import com.marcoassenza.shoppy.utils.NetworkStatus
+import com.marcoassenza.shoppy.utils.isConnected
+import com.marcoassenza.shoppy.viewmodels.ItemsViewModel
+import com.marcoassenza.shoppy.views.helpers.*
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.launchIn
@@ -39,9 +38,11 @@ class GroceryListFragment : Fragment() {
     private val binding get() = _binding!!
 
     //delegate by activityViewModels() MUST be used in order for the viewModel to be shared across fragment
-    private val groceryListViewModel: GroceryListViewModel by activityViewModels()
+    private val itemsViewModel: ItemsViewModel by activityViewModels()
     private lateinit var groceryListAdapter: GroceryListAdapter
     private lateinit var categoryListAdapter: CategoryChipAdapter
+
+    private var networkSnackbar: Snackbar? = null
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -66,6 +67,7 @@ class GroceryListFragment : Fragment() {
     override fun onResume() {
         super.onResume()
         setupFab()
+        setupNetworkStatusObserver()
     }
 
     override fun onDestroyView() {
@@ -73,8 +75,27 @@ class GroceryListFragment : Fragment() {
         _binding = null
     }
 
+    private fun setupNetworkStatusObserver() {
+        if (!requireContext().isConnected)
+            networkSnackbar = showNoNetworkSnackBar()
+
+        itemsViewModel.networkStatus
+            .flowWithLifecycle(lifecycle, Lifecycle.State.STARTED)
+            .onEach {
+                when (it) {
+                    NetworkStatus.Unavailable -> networkSnackbar = showNoNetworkSnackBar()
+                    NetworkStatus.Available -> {
+                        networkSnackbar?.dismiss()
+                        showNetworkIsBackSnackBar()
+                    }
+                    else -> {}
+                }
+            }
+            .launchIn(lifecycleScope)
+    }
+
     private fun setupChipRecyclerViewObserver() {
-        groceryListViewModel.categoryList
+        itemsViewModel.categoryList
             .flowWithLifecycle(lifecycle, Lifecycle.State.STARTED)
             .onEach {
                 withContext(Dispatchers.Main) {
@@ -86,7 +107,7 @@ class GroceryListFragment : Fragment() {
     }
 
     private fun setupItemRecyclerViewObserver() {
-        groceryListViewModel.groceryList
+        itemsViewModel.groceryList
             .flowWithLifecycle(lifecycle, Lifecycle.State.STARTED)
             .onEach {
                 withContext(Dispatchers.Main) {
@@ -105,8 +126,10 @@ class GroceryListFragment : Fragment() {
                 override fun onItemCardClick(item: Item) {}
 
                 override fun onItemCheckButtonClick(item: Item) {
-                    groceryListViewModel.deleteItem(item)
-                    showUndoDeleteItemSnackBar(item)
+                    if (requireContext().isConnected) {
+                        itemsViewModel.deleteItem(item)
+                        showUndoDeleteItemSnackBar(item)
+                    }
                 }
 
                 override fun onItemStorageButtonClick(item: Item) {
@@ -148,29 +171,28 @@ class GroceryListFragment : Fragment() {
     }
 
     private fun setupFab() {
-        activity?.let { activity ->
-            val fab = MainActivity.mainFabCustomizer(
-                activity,
-                R.string.add_item_to_grocery_list,
-                R.drawable.ic_baseline_add_shopping_cart_24
-            ) {
-                showAddItemBottomSheet()
-            }
-            binding.itemRecyclerview.enableShowHideExtendedFab(fab)
+        val fab = requireActivity().mainFabCustomizer(
+            R.string.add_item_to_grocery_list,
+            R.drawable.ic_baseline_add_shopping_cart_24
+        ) {
+            showAddItemBottomSheet()
         }
+        binding.itemRecyclerview.enableShowHideExtendedFab(fab)
     }
 
     private fun showMoveToStorageBottomSheet(item: Item) {
-        groceryListViewModel.setToBeTreatedItem(item)
-        findNavController().navigate(GroceryListFragmentDirections.navigateToMoveItemToStorage())
+        if (requireContext().isConnected) {
+            itemsViewModel.setToBeTreatedItem(item)
+            findNavController().navigate(GroceryListFragmentDirections.navigateToMoveItemToStorage())
+        }
     }
 
     private fun showAddItemBottomSheet() {
-        findNavController().navigate(GroceryListFragmentDirections.navigateToAddItemToGroceryList())
+        if (requireContext().isConnected) findNavController().navigate(GroceryListFragmentDirections.navigateToAddItemToGroceryList())
     }
 
     private fun setupMovedItemObserver() {
-        groceryListViewModel.movedItem
+        itemsViewModel.movedItem
             .flowWithLifecycle(lifecycle, Lifecycle.State.STARTED)
             .onEach { item ->
                 item?.let {
@@ -181,7 +203,7 @@ class GroceryListFragment : Fragment() {
     }
 
     private fun setupAddedItemObserver() {
-        groceryListViewModel.addedItem
+        itemsViewModel.addedItem
             .flowWithLifecycle(lifecycle, Lifecycle.State.STARTED)
             .onEach { item ->
                 item?.let {
@@ -192,24 +214,33 @@ class GroceryListFragment : Fragment() {
     }
 
     private fun showUndoMoveItemSnackBar(item: Item) {
-        binding.root.rootView.showUndoActionSnackbar(
+        binding.root.showUndoActionSnackbar(
             item.displayName.plus(" ")
                 .plus(getString(R.string.item_successfully_moved_to_storage))
-        ) { groceryListViewModel.undoMoveItemToStorage(item) }
+        ) { itemsViewModel.undoMoveItemToStorage(item) }
     }
 
     private fun showUndoAddItemSnackBar(item: Item) {
-        binding.root.rootView.showUndoActionSnackbar(
+        binding.root.showUndoActionSnackbar(
             item.displayName.plus(" ")
                 .plus(getString(R.string.item_successfully_added))
-        ) { groceryListViewModel.undoAddItem(item) }
+        ) { itemsViewModel.undoAddItem(item) }
     }
 
     private fun showUndoDeleteItemSnackBar(item: Item) {
-        binding.root.rootView.showUndoActionSnackbar(
+        binding.root.showUndoActionSnackbar(
             item.displayName.plus(" ")
                 .plus(getString(R.string.item_successfully_deleted))
-        ) { groceryListViewModel.undoDeleteItem(item) }
+        ) { itemsViewModel.undoDeleteItem(item) }
+    }
+
+    private fun showNoNetworkSnackBar(): Snackbar? {
+        networkSnackbar = binding.root.showIndefiniteSnackbar(getString(R.string.no_internet))
+        return networkSnackbar
+    }
+
+    private fun showNetworkIsBackSnackBar() {
+        binding.root.showLongSnackbar(getString(R.string.back_online))
     }
 
     private fun setEmptyStateViewVisible(isVisible: Boolean) {

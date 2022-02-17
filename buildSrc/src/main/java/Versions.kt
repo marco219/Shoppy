@@ -20,7 +20,9 @@ object Versions {
     const val hilt = "2.40.5"
     const val retrofit = "2.9.0"
     const val kotlinxCoroutines = "1.5.2"
-    const val gson = "2.8.6"
+    const val firebase = "20.0.1"
+    const val gms = "4.3.10"
+    const val datastore = "1.0.0"
 
     //test
     const val junit = "4.13.2"

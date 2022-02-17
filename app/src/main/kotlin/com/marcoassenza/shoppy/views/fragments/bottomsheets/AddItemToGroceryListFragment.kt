@@ -14,7 +14,7 @@ import com.marcoassenza.shoppy.adapters.DropDownMenuAdapter
 import com.marcoassenza.shoppy.databinding.FragmentAddItemToGroceryListBinding
 import com.marcoassenza.shoppy.models.Category
 import com.marcoassenza.shoppy.models.Item
-import com.marcoassenza.shoppy.viewmodels.GroceryListViewModel
+import com.marcoassenza.shoppy.viewmodels.ItemsViewModel
 import com.marcoassenza.shoppy.views.helpers.hideKeyboard
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.Dispatchers
@@ -30,7 +30,7 @@ class AddItemToGroceryListFragment : BottomSheetDialogFragment() {
     // This property is only valid between onCreateView and
     // onDestroyView.
     private val binding get() = _binding!!
-    private val groceryListViewModel: GroceryListViewModel by activityViewModels()
+    private val itemsViewModel: ItemsViewModel by activityViewModels()
 
     private lateinit var selectedCategory: Category
 
@@ -50,7 +50,7 @@ class AddItemToGroceryListFragment : BottomSheetDialogFragment() {
     }
 
     private fun setupDropdownMenuObserver() {
-        groceryListViewModel.defaultCategoryList
+        itemsViewModel.defaultCategoryList
             .flowWithLifecycle(lifecycle, Lifecycle.State.STARTED)
             .onEach { list ->
                 list?.let {
@@ -74,7 +74,7 @@ class AddItemToGroceryListFragment : BottomSheetDialogFragment() {
 
     private fun setupValidationButton() {
         binding.validateButton.setOnClickListener {
-            val itemName = binding.itemNameInput.text.toString()
+            val itemName = binding.itemNameInput.text.toString().lowercase()
             when {
                 itemName.isBlank() -> {
                     binding.itemNameInputLayout.error =
@@ -86,7 +86,7 @@ class AddItemToGroceryListFragment : BottomSheetDialogFragment() {
                 }
                 else -> {
                     val item = Item(name = itemName, category = selectedCategory)
-                    groceryListViewModel.insertNewItem(item)
+                    itemsViewModel.insertNewItem(item)
                     dismiss()
                 }
             }

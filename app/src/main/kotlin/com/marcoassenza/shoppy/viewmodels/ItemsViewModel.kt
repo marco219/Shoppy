@@ -2,9 +2,12 @@ package com.marcoassenza.shoppy.viewmodels
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.marcoassenza.shoppy.data.ItemRepository
+import com.marcoassenza.shoppy.data.ItemsRepository
 import com.marcoassenza.shoppy.models.Category
 import com.marcoassenza.shoppy.models.Item
+import com.marcoassenza.shoppy.utils.NetworkStatus
+import com.marcoassenza.shoppy.utils.NetworkStatusTracker
+import com.marcoassenza.shoppy.utils.map
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.flow.SharingStarted.Companion.Lazily
@@ -12,12 +15,38 @@ import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
-class GroceryListViewModel @Inject constructor(
-    private val itemRepository: ItemRepository
+class ItemsViewModel @Inject constructor(
+    private val networkStatusTracker: NetworkStatusTracker,
+    private val itemsRepository: ItemsRepository
 ) : ViewModel() {
 
+    init {
+        fetchRemoteDataAndUpdateLocal()
+    }
+
+    val networkStatus: SharedFlow<NetworkStatus?> = flow {
+        networkStatusTracker.networkStatus.map(
+            onLost = {
+                NetworkStatus.Unavailable
+            },
+            onAvailable = {
+                fetchRemoteDataAndUpdateLocal()
+                NetworkStatus.Available
+            },
+            onUnavailable = {
+                NetworkStatus.Unavailable
+            }
+        ).collect {
+            emit(it)
+        }
+    }.shareIn(
+        scope = viewModelScope,
+        started = Lazily,
+        replay = 0
+    )
+
     val groceryList: StateFlow<List<Item>> = flow {
-        emitAll(itemRepository.getGroceryItems())
+        emitAll(itemsRepository.getGroceryItems())
     }.stateIn(
         scope = viewModelScope,
         started = Lazily,
@@ -25,7 +54,7 @@ class GroceryListViewModel @Inject constructor(
     )
 
     val categoryList: StateFlow<List<Category>> = flow {
-        emitAll(itemRepository.getGroceryListCategories())
+        emitAll(itemsRepository.getGroceryListCategories())
     }.stateIn(
         scope = viewModelScope,
         started = Lazily,
@@ -33,7 +62,7 @@ class GroceryListViewModel @Inject constructor(
     )
 
     val defaultCategoryList: StateFlow<List<Category>?> = flow {
-        emit(itemRepository.getDefaultCategories())
+        emit(itemsRepository.getDefaultCategories())
     }.stateIn(
         scope = viewModelScope,
         started = Lazily,
@@ -41,7 +70,7 @@ class GroceryListViewModel @Inject constructor(
     )
 
     val storageList: StateFlow<List<Item>> = flow {
-        emitAll(itemRepository.getStorageItems())
+        emitAll(itemsRepository.getStorageItems())
     }.stateIn(
         scope = viewModelScope,
         started = Lazily,
@@ -49,7 +78,7 @@ class GroceryListViewModel @Inject constructor(
     )
 
     val storageCategoryList: StateFlow<List<Category>> = flow {
-        emitAll(itemRepository.getStorageCategories())
+        emitAll(itemsRepository.getStorageCategories())
     }.stateIn(
         scope = viewModelScope,
         started = Lazily,
@@ -73,57 +102,63 @@ class GroceryListViewModel @Inject constructor(
 
     fun insertNewItem(item: Item) {
         viewModelScope.launch {
-            itemRepository.insertItem(item)
+            itemsRepository.insertItem(item)
             _addedItem.emit(item)
         }
     }
 
     fun deleteItem(item: Item) {
         viewModelScope.launch {
-            itemRepository.deleteItem(item)
+            itemsRepository.deleteItem(item)
         }
     }
 
     fun undoAddItem(item: Item) {
         viewModelScope.launch {
-            itemRepository.deleteItemWithNameAndCategory(item)
+            itemsRepository.deleteItemWithNameAndCategory(item)
         }
     }
 
     fun undoMoveItemToStorage(item: Item) {
         viewModelScope.launch {
-            itemRepository.resetStockQuantityAndMoveToGroceryList(item)
+            itemsRepository.resetStockQuantityAndMoveToGroceryList(item)
         }
     }
 
     fun undoMoveItemToGroceryList(item: Item) {
         viewModelScope.launch {
-            itemRepository.updateStockQuantityAndMoveToStorage(item, 1)
+            itemsRepository.updateStockQuantityAndMoveToStorage(item, 1)
         }
     }
 
     fun undoDeleteItem(item: Item) {
         viewModelScope.launch {
-            itemRepository.insertItem(item)
+            itemsRepository.insertItem(item)
         }
     }
 
     fun updateStockQuantityAndMoveToStorage(item: Item, quantity: Int) {
         viewModelScope.launch {
-            itemRepository.updateStockQuantityAndMoveToStorage(item, quantity)
+            itemsRepository.updateStockQuantityAndMoveToStorage(item, quantity)
             _movedItem.emit(item)
         }
     }
 
     fun updateStockQuantity(item: Item, quantity: Int) {
         viewModelScope.launch {
-            itemRepository.updateStockQuantity(item, quantity)
+            itemsRepository.updateStockQuantity(item, quantity)
         }
     }
 
     fun resetStockQuantityAndMoveToGroceryList(item: Item) {
         viewModelScope.launch {
-            itemRepository.resetStockQuantityAndMoveToGroceryList(item)
+            itemsRepository.resetStockQuantityAndMoveToGroceryList(item)
+        }
+    }
+
+    private fun fetchRemoteDataAndUpdateLocal() {
+        viewModelScope.launch {
+            itemsRepository.fetchRemoteDataAndUpdateLocal()
         }
     }
 }
