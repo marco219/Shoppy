@@ -2,8 +2,8 @@ package com.marcoassenza.shoppy.di
 
 import android.app.Application
 import androidx.room.Room
-import com.marcoassenza.shoppy.data.local.ItemDao
-import com.marcoassenza.shoppy.data.local.ItemDatabase
+import com.marcoassenza.shoppy.data.local.database.ItemDao
+import com.marcoassenza.shoppy.data.local.database.ItemDatabase
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn

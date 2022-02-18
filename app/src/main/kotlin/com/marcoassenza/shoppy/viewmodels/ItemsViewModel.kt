@@ -3,6 +3,8 @@ package com.marcoassenza.shoppy.viewmodels
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.marcoassenza.shoppy.data.ItemsRepository
+import com.marcoassenza.shoppy.data.local.datastore.PreferencesDataStoreManager
+import com.marcoassenza.shoppy.data.local.remote.RemoteDatabaseStatus
 import com.marcoassenza.shoppy.models.Category
 import com.marcoassenza.shoppy.models.Item
 import com.marcoassenza.shoppy.utils.NetworkStatus
@@ -10,6 +12,7 @@ import com.marcoassenza.shoppy.utils.NetworkStatusTracker
 import com.marcoassenza.shoppy.utils.map
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.*
+import kotlinx.coroutines.flow.SharingStarted.Companion.Eagerly
 import kotlinx.coroutines.flow.SharingStarted.Companion.Lazily
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -17,82 +20,76 @@ import javax.inject.Inject
 @HiltViewModel
 class ItemsViewModel @Inject constructor(
     private val networkStatusTracker: NetworkStatusTracker,
-    private val itemsRepository: ItemsRepository
+    private val itemsRepository: ItemsRepository,
+    private val preferencesDataStoreManager: PreferencesDataStoreManager
 ) : ViewModel() {
 
-    init {
-        fetchRemoteDataAndUpdateLocal()
-    }
+    private val _remoteDataStatus: MutableStateFlow<RemoteDatabaseStatus> =
+        MutableStateFlow(RemoteDatabaseStatus.Unknown)
+    val remoteDataStatus: StateFlow<RemoteDatabaseStatus> = _remoteDataStatus
 
+    private val _movedItem = MutableSharedFlow<Item?>(0)
+    val movedItem: SharedFlow<Item?> = _movedItem
+
+    private val _addedItem = MutableSharedFlow<Item?>(0)
+    val addedItem: SharedFlow<Item?> = _addedItem
+
+    private var _toBeTreatedItem = MutableStateFlow<Item?>(null)
+    val toBeTreatedItem: StateFlow<Item?> = _toBeTreatedItem
+
+
+    val username: StateFlow<String> = preferencesDataStoreManager.userName
+        .onEach { user ->
+            if (user.isNotEmpty()) {
+                itemsRepository.updateUser(user)
+                itemsRepository.remoteDataListener
+                    .onEach {
+                        _remoteDataStatus.emit(it)
+                    }
+                    .stateIn(viewModelScope, Eagerly, RemoteDatabaseStatus.Unknown)
+            } else _remoteDataStatus.emit(RemoteDatabaseStatus.UserNameIsNull)
+        }
+        .stateIn(viewModelScope, Eagerly, "")
+
+    //TODO: maybe use a state flow instead of a shared one
     val networkStatus: SharedFlow<NetworkStatus?> = flow {
         networkStatusTracker.networkStatus.map(
             onLost = {
+                _remoteDataStatus.emit(RemoteDatabaseStatus.Unavailable)
                 NetworkStatus.Unavailable
             },
             onAvailable = {
-                fetchRemoteDataAndUpdateLocal()
+                _remoteDataStatus.emit(RemoteDatabaseStatus.Available)
                 NetworkStatus.Available
             },
             onUnavailable = {
+                _remoteDataStatus.emit(RemoteDatabaseStatus.Unavailable)
                 NetworkStatus.Unavailable
             }
         ).collect {
             emit(it)
         }
-    }.shareIn(
-        scope = viewModelScope,
-        started = Lazily,
-        replay = 0
-    )
+    }.shareIn(viewModelScope, Lazily, 0)
 
     val groceryList: StateFlow<List<Item>> = flow {
         emitAll(itemsRepository.getGroceryItems())
-    }.stateIn(
-        scope = viewModelScope,
-        started = Lazily,
-        initialValue = emptyList()
-    )
+    }.stateIn(viewModelScope, Lazily, emptyList())
 
     val categoryList: StateFlow<List<Category>> = flow {
         emitAll(itemsRepository.getGroceryListCategories())
-    }.stateIn(
-        scope = viewModelScope,
-        started = Lazily,
-        initialValue = emptyList()
-    )
+    }.stateIn(viewModelScope, Lazily, emptyList())
 
     val defaultCategoryList: StateFlow<List<Category>?> = flow {
         emit(itemsRepository.getDefaultCategories())
-    }.stateIn(
-        scope = viewModelScope,
-        started = Lazily,
-        initialValue = emptyList()
-    )
+    }.stateIn(viewModelScope, Lazily, emptyList())
 
     val storageList: StateFlow<List<Item>> = flow {
         emitAll(itemsRepository.getStorageItems())
-    }.stateIn(
-        scope = viewModelScope,
-        started = Lazily,
-        initialValue = emptyList()
-    )
+    }.stateIn(viewModelScope, Lazily, emptyList())
 
     val storageCategoryList: StateFlow<List<Category>> = flow {
         emitAll(itemsRepository.getStorageCategories())
-    }.stateIn(
-        scope = viewModelScope,
-        started = Lazily,
-        initialValue = emptyList()
-    )
-
-    private val _movedItem = MutableSharedFlow<Item?>(0)
-    val movedItem: SharedFlow<Item?> = _movedItem.asSharedFlow()
-
-    private val _addedItem = MutableSharedFlow<Item?>(0)
-    val addedItem: SharedFlow<Item?> = _addedItem.asSharedFlow()
-
-    private var _toBeTreatedItem = MutableStateFlow<Item?>(null)
-    val toBeTreatedItem: StateFlow<Item?> = _toBeTreatedItem.asStateFlow()
+    }.stateIn(viewModelScope, Lazily, emptyList())
 
     fun setToBeTreatedItem(item: Item) {
         viewModelScope.launch {
@@ -113,10 +110,11 @@ class ItemsViewModel @Inject constructor(
         }
     }
 
+    //TODO: it does not remove it because getAllItem from Dao is not updated instantly
     fun undoAddItem(item: Item) {
-        viewModelScope.launch {
+        /*viewModelScope.launch {
             itemsRepository.deleteItemWithNameAndCategory(item)
-        }
+        }*/
     }
 
     fun undoMoveItemToStorage(item: Item) {
@@ -156,9 +154,11 @@ class ItemsViewModel @Inject constructor(
         }
     }
 
-    private fun fetchRemoteDataAndUpdateLocal() {
+    fun submitNewUsername(userName: String) {
         viewModelScope.launch {
-            itemsRepository.fetchRemoteDataAndUpdateLocal()
+            _remoteDataStatus.emit(RemoteDatabaseStatus.ChangingUser)
+            itemsRepository.resetLocalDb()
+            preferencesDataStoreManager.setUserName(userName)
         }
     }
 }

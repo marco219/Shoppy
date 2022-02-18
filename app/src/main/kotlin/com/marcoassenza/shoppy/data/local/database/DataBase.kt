@@ -1,4 +1,4 @@
-package com.marcoassenza.shoppy.data.local
+package com.marcoassenza.shoppy.data.local.database
 
 import androidx.room.Database
 import androidx.room.RoomDatabase

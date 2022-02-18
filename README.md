@@ -13,9 +13,9 @@ Android application to help you manage your grocery list and keep track of your 
 
 ## Design
 
-* Main inspiration came from [material.io](https://material.io/)
-* Pictures for void fragment are found on [undraw](https://undraw.co/)
-* Launcher icon found on [pixabay](https://pixabay.com/vectors/avocado-half-cross-section-5928508/)
+* Design guidelines from [material.io](https://material.io/)
+* Pictures are from [undraw](https://undraw.co/)
+* Launcher icon is from [pixabay](https://pixabay.com/vectors/avocado-half-cross-section-5928508/)
 
 ## Architecture
 
@@ -29,7 +29,8 @@ MVVM Architecture (View - DataBinding - ViewModel - Model)
 - [Navigation](https://developer.android.com/guide/navigation)
 - [ViewModel](https://developer.android.com/topic/libraries/architecture/viewmodel)
 - [ViewBinding](https://developer.android.com/topic/libraries/view-binding)
-- [Room](https://developer.android.com/topic/libraries/architecture/room)
 - [Hilt](https://developer.android.com/training/dependency-injection)
-- [Retrofit](https://square.github.io/retrofit/)
+- [Room](https://developer.android.com/topic/libraries/architecture/room)
+- [DataStore](https://developer.android.com/topic/libraries/architecture/datastore)
+- [Firebase Realtime Database](https://firebase.google.com/docs/database)
 - [Gradle Kotlin DSL](https://docs.gradle.org/current/userguide/kotlin_dsl.html)

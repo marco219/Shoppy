@@ -1,12 +1,10 @@
 package com.marcoassenza.shoppy.data
 
 import android.content.Context
-import com.google.firebase.database.DataSnapshot
-import com.google.firebase.database.DatabaseError
-import com.google.firebase.database.DatabaseReference
-import com.google.firebase.database.ValueEventListener
 import com.marcoassenza.shoppy.R
-import com.marcoassenza.shoppy.data.local.ItemDao
+import com.marcoassenza.shoppy.data.local.database.ItemDao
+import com.marcoassenza.shoppy.data.local.remote.FirebaseDatabaseDao
+import com.marcoassenza.shoppy.data.local.remote.RemoteDatabaseStatus
 import com.marcoassenza.shoppy.models.Category
 import com.marcoassenza.shoppy.models.Item
 import com.marcoassenza.shoppy.models.areIdEqual
@@ -14,23 +12,24 @@ import com.marcoassenza.shoppy.models.isInStorage
 import com.marcoassenza.shoppy.utils.Constant
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.channels.awaitClose
-import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.callbackFlow
-import kotlinx.coroutines.flow.collect
-import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.flow.*
+import timber.log.Timber
 import javax.inject.Inject
 
 @OptIn(ExperimentalCoroutinesApi::class)
 class ItemsRepository @Inject constructor(
     @ApplicationContext private val applicationContext: Context,
     private val itemDao: ItemDao,
-    private val firebaseDB: DatabaseReference
+    private val firebaseDatabaseDao: FirebaseDatabaseDao
 ) {
 
     suspend fun insertItem(item: Item) {
         itemDao.insert(item)
-        updateRemoteItems()
+        updateRemote()
+    }
+
+    private suspend fun updateRemote() {
+        firebaseDatabaseDao.updateRemoteItems(itemDao.getAllItem())
     }
 
     suspend fun updateStockQuantity(item: Item, quantity: Int) {
@@ -38,30 +37,34 @@ class ItemsRepository @Inject constructor(
         if (item.stockQuantity == Constant.MAX_ITEM_IN_STORAGE && quantity > 0) return
         val newStockQuantity = quantity + item.stockQuantity
         itemDao.updateStockQuantity(newStockQuantity, item.id)
-        updateRemoteItems()
+        updateRemote()
     }
 
     suspend fun resetStockQuantityAndMoveToGroceryList(item: Item) {
         itemDao.updateStockQuantity(0, item.id)
         itemDao.updateIsInGroceryList(true, item.id)
-        updateRemoteItems()
+        updateRemote()
     }
 
     suspend fun updateStockQuantityAndMoveToStorage(item: Item, quantityToAdd: Int) {
         val newStockQuantity = quantityToAdd + item.stockQuantity
         itemDao.updateStockQuantity(newStockQuantity, item.id)
         itemDao.updateIsInGroceryList(false, item.id)
-        updateRemoteItems()
+        updateRemote()
     }
 
     suspend fun deleteItem(item: Item) {
         itemDao.delete(item)
-        updateRemoteItems()
+        updateRemote()
+    }
+
+    suspend fun resetLocalDb() {
+        itemDao.deleteAll()
     }
 
     suspend fun deleteItemWithNameAndCategory(item: Item) {
         itemDao.deleteItemWithNameAndCategory(item.name, item.category.categoryId)
-        updateRemoteItems()
+        updateRemote()
     }
 
     private suspend fun getAllItemFlow(): Flow<Result<List<Item>>> = flow {
@@ -131,13 +134,17 @@ class ItemsRepository @Inject constructor(
         }.distinct()
     }
 
-    suspend fun fetchRemoteDataAndUpdateLocal() {
-        getRemoteItems().collect { result ->
+    fun updateUser(userName: String) {
+        firebaseDatabaseDao.userName = userName
+    }
+
+    val remoteDataListener = flow {
+        firebaseDatabaseDao.remoteDataListenerCallBackFlow.onEach { result ->
             when {
                 result.isSuccess -> {
-                    val fetchedItems = result.getOrElse { return@collect }.map { item ->
-                        val category = getDefaultCategories().first {
-                            item.category.areIdEqual(it)
+                    val fetchedItems = result.getOrThrow().map { item ->
+                        val category = getDefaultCategories().first { defaultCategory ->
+                            item.category.areIdEqual(defaultCategory)
                         }
                         item.category = category
                         item
@@ -145,37 +152,20 @@ class ItemsRepository @Inject constructor(
                     val itemsToDelete = itemDao.getAllItem().filterNot { localItem ->
                         fetchedItems.any { localItem.areIdEqual(it) }
                     }
-
                     itemDao.deleteItems(itemsToDelete)
                     itemDao.insertItems(fetchedItems)
+                    emit(RemoteDatabaseStatus.Available)
+                }
+                result.isFailure -> {
+                    emit(RemoteDatabaseStatus.Failure)
+                    //TODO: handle failure exceptions
                 }
             }
         }
-    }
-
-    private suspend fun updateRemoteItems() {
-        firebaseDB.setValue(itemDao.getAllItem())
-    }
-
-    @ExperimentalCoroutinesApi
-    fun getRemoteItems() = callbackFlow {
-
-        val listener = object : ValueEventListener {
-            override fun onCancelled(error: DatabaseError) {
-                this@callbackFlow.trySend(Result.failure(error.toException()))
+            .catch { cause ->
+                Timber.e(cause.localizedMessage)
+                emit(RemoteDatabaseStatus.Failure)
             }
-
-            override fun onDataChange(dataSnapshot: DataSnapshot) {
-                val items = dataSnapshot.children.map { ds ->
-                    ds.getValue(Item::class.java)
-                }
-                this@callbackFlow.trySend(Result.success(items.filterNotNull()))
-            }
-        }
-        firebaseDB.addValueEventListener(listener)
-
-        awaitClose {
-            firebaseDB.removeEventListener(listener)
-        }
+            .collect()
     }
 }

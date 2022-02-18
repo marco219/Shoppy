@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="app_name">Shoppy</string>
-    <string name="title_home">Accueil</string>
+    <string name="title_settings">Réglages</string>
     <string name="title_grocery_list">Liste de course</string>
     <string name="title_storage">Stock</string>
     <string name="add_item_to_grocery_list">Ajouter article</string>
@@ -51,4 +51,17 @@
     <string name="item_successfully_moved_to_grocery_list">a été déplacé dans la liste de course</string>
     <string name="no_internet">Pas de connexion internet. Auncune modification n\'est possible hors ligne.</string>
     <string name="back_online">Connexion rétablie</string>
+    <string name="edit_username">Modifier votre nom d\'utilisateur</string>
+    <string name="username_info">Si tu souhaites partager ta liste de course avec d\'autres utilisateurs il suffit de renseigner un même nom d\'utilisateur</string>
+    <string name="username">Nom d\'utilisateur</string>
+    <string name="change_username">Changer de nom d\'utilisateur</string>
+    <string name="grocery_overview">Aperçu liste de course</string>
+    <string name="storage_overview">Aperçu stock</string>
+    <string name="database_status">Etat des données en ligne</string>
+    <string name="there_are">Il y a</string>
+    <string name="there_is">Il y a</string>
+    <string name="item_in_grocery_list">articles dans ta liste de course</string>
+    <string name="items_in_grocery_list">articles dans ta liste de course</string>
+    <string name="item_in_storage">article dans ton stock</string>
+    <string name="items_in_storage">articles dans ton stock</string>
 </resources>

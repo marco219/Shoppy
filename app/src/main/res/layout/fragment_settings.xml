@@ -1,0 +1,240 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".views.fragments.SettingsFragment">
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/small_margin"
+            android:layout_marginBottom="@dimen/small_margin"
+            android:orientation="vertical">
+
+            <com.google.android.material.card.MaterialCardView
+                android:id="@+id/storage_card"
+                style="?attr/materialCardViewFilledStyle"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="@dimen/big_margin"
+                android:layout_marginTop="@dimen/small_margin"
+                android:layout_marginEnd="@dimen/big_margin"
+                android:layout_marginBottom="@dimen/small_margin"
+                android:checkable="true"
+                android:clickable="true"
+                android:focusable="true"
+                android:hapticFeedbackEnabled="true"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="@dimen/big_margin"
+                    android:orientation="vertical">
+
+                    <com.google.android.material.textview.MaterialTextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_margin="@dimen/tiny_margin"
+                        android:drawableStart="@drawable/ic_baseline_kitchen_24"
+                        android:drawablePadding="@dimen/small_margin"
+                        android:drawableTint="@color/md_theme_primary"
+                        android:gravity="center_horizontal"
+                        android:text="@string/storage_overview"
+                        android:textAppearance="?attr/textAppearanceTitleLarge" />
+
+                    <com.google.android.material.textview.MaterialTextView
+                        android:id="@+id/storage_card_text"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_margin="@dimen/tiny_margin"
+                        android:gravity="center_horizontal"
+                        android:text="@string/storage_overview"
+                        android:textAppearance="?attr/textAppearanceTitleMedium"
+                        android:textStyle="italic" />
+                </LinearLayout>
+
+            </com.google.android.material.card.MaterialCardView>
+
+            <com.google.android.material.card.MaterialCardView
+                android:id="@+id/grocery_card"
+                style="?attr/materialCardViewFilledStyle"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="@dimen/big_margin"
+                android:layout_marginEnd="@dimen/big_margin"
+                android:layout_marginBottom="@dimen/small_margin"
+                android:checkable="true"
+                android:clickable="true"
+                android:focusable="true"
+                android:hapticFeedbackEnabled="true"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/storage_card">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="@dimen/big_margin"
+                    android:orientation="vertical">
+
+                    <com.google.android.material.textview.MaterialTextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_margin="@dimen/tiny_margin"
+                        android:drawableStart="@drawable/ic_baseline_format_list_bulleted_24"
+                        android:drawablePadding="@dimen/small_margin"
+                        android:drawableTint="@color/md_theme_primary"
+                        android:gravity="center_horizontal"
+                        android:text="@string/grocery_overview"
+                        android:textAppearance="?attr/textAppearanceTitleLarge" />
+
+                    <com.google.android.material.textview.MaterialTextView
+                        android:id="@+id/grocery_list_card_text"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_margin="@dimen/tiny_margin"
+                        android:gravity="center_horizontal"
+                        android:text="@string/grocery_overview"
+                        android:textAppearance="?attr/textAppearanceTitleMedium"
+                        android:textStyle="italic" />
+                </LinearLayout>
+
+            </com.google.android.material.card.MaterialCardView>
+
+            <com.google.android.material.card.MaterialCardView
+                android:id="@+id/database_status_card"
+                style="?attr/materialCardViewFilledStyle"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="@dimen/big_margin"
+                android:layout_marginEnd="@dimen/big_margin"
+                android:layout_marginBottom="@dimen/small_margin"
+                android:checkable="true"
+                android:clickable="true"
+                android:focusable="true"
+                android:hapticFeedbackEnabled="true"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="@dimen/big_margin"
+                    android:orientation="vertical">
+
+                    <com.google.android.material.textview.MaterialTextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_margin="@dimen/tiny_margin"
+                        android:drawableStart="@drawable/ic_baseline_query_stats_24"
+                        android:drawablePadding="@dimen/small_margin"
+                        android:drawableTint="@color/md_theme_primary"
+                        android:gravity="center_horizontal"
+                        android:text="@string/database_status"
+                        android:textAppearance="?attr/textAppearanceTitleLarge" />
+
+                    <com.google.android.material.textview.MaterialTextView
+                        android:id="@+id/status_card_text"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_margin="@dimen/tiny_margin"
+                        android:gravity="center_horizontal"
+                        android:text="@string/database_status"
+                        android:textAppearance="?attr/textAppearanceTitleMedium"
+                        android:textStyle="italic" />
+                </LinearLayout>
+
+            </com.google.android.material.card.MaterialCardView>
+
+            <com.google.android.material.card.MaterialCardView
+                android:id="@+id/username_card"
+                style="?attr/materialCardViewFilledStyle"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="@dimen/big_margin"
+                android:layout_marginEnd="@dimen/big_margin"
+                android:layout_marginBottom="@dimen/small_margin"
+                android:checkable="true"
+                android:clickable="true"
+                android:focusable="true"
+                android:hapticFeedbackEnabled="true"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/grocery_card">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="@dimen/big_margin"
+                    android:orientation="vertical">
+
+                    <com.google.android.material.textview.MaterialTextView
+                        android:id="@+id/text"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_margin="@dimen/tiny_margin"
+                        android:drawableStart="@drawable/ic_baseline_person_24"
+                        android:drawablePadding="@dimen/small_margin"
+                        android:drawableTint="@color/md_theme_primary"
+                        android:text="@string/edit_username"
+                        android:textAppearance="?attr/textAppearanceTitleLarge" />
+
+                    <com.google.android.material.textview.MaterialTextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_margin="@dimen/tiny_margin"
+                        android:drawableStart="@drawable/ic_baseline_info_24"
+                        android:drawablePadding="@dimen/small_margin"
+                        android:drawableTint="@color/md_theme_primary"
+                        android:text="@string/username_info"
+                        android:textAppearance="?attr/textAppearanceTitleMedium"
+                        android:textStyle="italic" />
+
+                    <com.google.android.material.textfield.TextInputLayout
+                        android:id="@+id/user_name_input_layout"
+                        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_margin="@dimen/small_margin"
+                        android:hint="@string/username"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toBottomOf="@id/text"
+                        app:startIconDrawable="@drawable/ic_baseline_create_24">
+
+                        <com.google.android.material.textfield.TextInputEditText
+                            android:id="@+id/user_name_input"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:inputType="textCapSentences"
+                            android:maxLength="30" />
+                    </com.google.android.material.textfield.TextInputLayout>
+
+                    <com.google.android.material.button.MaterialButton
+                        android:id="@+id/validate_button"
+                        style="@style/Widget.Material3.Button.ElevatedButton.Icon"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_margin="@dimen/small_margin"
+                        android:foregroundTint="@color/md_theme_primary"
+                        android:gravity="center_horizontal"
+                        android:text="@string/change_username"
+                        android:textAppearance="?attr/textAppearanceTitleMedium"
+                        app:backgroundTint="@color/md_theme_primaryContainer"
+                        app:icon="@drawable/ic_baseline_autorenew_24"
+                        app:iconSize="24dp"
+                        app:iconTint="@color/md_theme_primary"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintStart_toStartOf="parent" />
+                </LinearLayout>
+
+            </com.google.android.material.card.MaterialCardView>
+        </LinearLayout>
+    </ScrollView>
+</androidx.constraintlayout.widget.ConstraintLayout>

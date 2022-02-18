@@ -25,6 +25,7 @@ class NetworkStatusTracker(context: Context) {
             }
 
             override fun onAvailable(network: Network) {
+                //TODO:on available is not sent
                 trySend(NetworkStatus.Available)
             }
 

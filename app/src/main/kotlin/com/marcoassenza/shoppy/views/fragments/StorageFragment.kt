@@ -189,7 +189,7 @@ class StorageFragment : Fragment() {
             .flowWithLifecycle(lifecycle, Lifecycle.State.STARTED)
             .onEach { item ->
                 item?.let {
-                    showUndoAddItemSnackBar(item)
+                    //showUndoAddItemSnackBar(item)
                 }
             }
             .launchIn(lifecycleScope)

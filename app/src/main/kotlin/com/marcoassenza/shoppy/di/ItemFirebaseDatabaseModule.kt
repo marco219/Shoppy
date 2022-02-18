@@ -19,6 +19,5 @@ object ItemFirebaseDatabaseModule {
         return FirebaseDatabase
             .getInstance(Constant.FIREBASE_DB_URL)
             .reference
-            .child(Constant.CHILD_DB_NAME)
     }
 }
