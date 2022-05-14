@@ -2,7 +2,7 @@
 object Versions {
 
     //app level
-    const val gradle = "7.1.1"
+    const val gradle = "7.1.3"
     const val kotlin = "1.6.10"
     const val hiltAndroid = "2.40.5"
 
