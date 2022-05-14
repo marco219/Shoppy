@@ -39,6 +39,9 @@ class ItemsViewModel @Inject constructor(
     private var _toBeTreatedItem = MutableStateFlow<Item?>(null)
     val toBeTreatedItem: StateFlow<Item?> = _toBeTreatedItem
 
+    private var _itemToAddFromSearchField = MutableStateFlow<String?>(null)
+    val itemToAddFromSearchField: StateFlow<String?> = _itemToAddFromSearchField
+
 
     val username: StateFlow<String> = preferencesDataStoreManager.userName
         .onEach { user ->
@@ -101,6 +104,12 @@ class ItemsViewModel @Inject constructor(
     val storageCategoryList: StateFlow<List<Category>> = flow {
         emitAll(itemsRepository.getStorageCategories())
     }.stateIn(viewModelScope, Lazily, emptyList())
+
+    fun setItemToAddFromSearchField(query: String?) {
+        viewModelScope.launch {
+            _itemToAddFromSearchField.emit(query)
+        }
+    }
 
     fun setToBeTreatedItem(item: Item) {
         viewModelScope.launch {

@@ -168,21 +168,25 @@ class GroceryListFragment : Fragment() {
 
     private fun setupSearchView() {
         groceryListAdapter.filter(binding.searchBar.query.toString().lowercase())
-        binding.searchBar.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
-            override fun onQueryTextSubmit(searchText: String?): Boolean {
-                searchText?.let {
-                    groceryListAdapter.filter(searchText.lowercase())
+        binding.searchBar.apply {
+            setOnQueryTextListener(object : SearchView.OnQueryTextListener {
+                override fun onQueryTextSubmit(searchText: String?): Boolean {
+                    searchText?.let {
+                        showAddItemBottomSheet(searchText)
+                        groceryListAdapter.filter(searchText.lowercase())
+                    }
+                    return false
                 }
-                return false
-            }
 
-            override fun onQueryTextChange(searchText: String?): Boolean {
-                searchText?.let {
-                    groceryListAdapter.filter(searchText.lowercase())
+                override fun onQueryTextChange(searchText: String?): Boolean {
+                    searchText?.let {
+                        this@apply.isSubmitButtonEnabled = it.isNotEmpty()
+                        groceryListAdapter.filter(searchText.lowercase())
+                    }
+                    return true
                 }
-                return true
-            }
-        })
+            })
+        }
     }
 
     private fun setupBaseView() {
@@ -204,8 +208,11 @@ class GroceryListFragment : Fragment() {
         }
     }
 
-    private fun showAddItemBottomSheet() {
-        if (requireContext().isConnected) findNavController().navigate(GroceryListFragmentDirections.navigateToAddItemToGroceryList())
+    private fun showAddItemBottomSheet(query: String? = null) {
+        if (requireContext().isConnected){
+            itemsViewModel.setItemToAddFromSearchField(query)
+            findNavController().navigate(GroceryListFragmentDirections.navigateToAddItemToGroceryList())
+        }
     }
 
     private fun setupMovedItemObserver() {

@@ -48,6 +48,17 @@ class AddItemToStorageFragment : BottomSheetDialogFragment() {
         setupMinusPlusButton()
         setupDropdownMenuObserver()
         setupValidationButton()
+        setupItemToAddFromSearchFieldObserver()
+    }
+
+    private fun setupItemToAddFromSearchFieldObserver() {
+        itemsViewModel.itemToAddFromSearchField
+            .flowWithLifecycle(lifecycle, Lifecycle.State.STARTED)
+            .onEach { item ->
+                item?.let {
+                    binding.itemNameInputLayout.editText?.setText(it)
+                }
+            }.launchIn(lifecycleScope)
     }
 
     private fun setupDropdownMenuObserver() {

@@ -8,7 +8,6 @@
 
     <SearchView
         android:id="@+id/search_bar"
-        android:focusable="false"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_gravity="top|center"
@@ -17,9 +16,12 @@
         android:layout_marginEnd="@dimen/big_margin"
         android:layout_marginBottom="@dimen/small_margin"
         android:background="@drawable/search_view_background"
+        android:focusable="false"
+        android:goIcon="@drawable/ic_baseline_add_24"
         android:iconifiedByDefault="false"
         android:queryBackground="@android:color/transparent"
         android:queryHint="@string/search_hint"
+        android:submitBackground="@drawable/search_view_background"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 

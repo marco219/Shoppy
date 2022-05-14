@@ -158,21 +158,25 @@ class StorageFragment : Fragment() {
 
     private fun setupSearchView() {
         storageAdapter.filter(binding.searchBar.query.toString().lowercase())
-        binding.searchBar.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
-            override fun onQueryTextSubmit(searchText: String?): Boolean {
-                searchText?.let {
-                    storageAdapter.filter(searchText.lowercase())
+        binding.searchBar.apply {
+            setOnQueryTextListener(object : SearchView.OnQueryTextListener {
+                override fun onQueryTextSubmit(searchText: String?): Boolean {
+                    searchText?.let {
+                        showAddItemBottomSheet(searchText)
+                        storageAdapter.filter(searchText.lowercase())
+                    }
+                    return false
                 }
-                return false
-            }
 
-            override fun onQueryTextChange(searchText: String?): Boolean {
-                searchText?.let {
-                    storageAdapter.filter(searchText.lowercase())
+                override fun onQueryTextChange(searchText: String?): Boolean {
+                    searchText?.let {
+                        this@apply.isSubmitButtonEnabled = it.isNotEmpty()
+                        storageAdapter.filter(searchText.lowercase())
+                    }
+                    return true
                 }
-                return true
-            }
-        })
+            })
+        }
     }
 
     private fun setupBaseView() {
@@ -197,8 +201,9 @@ class StorageFragment : Fragment() {
             .launchIn(lifecycleScope)
     }
 
-    private fun showAddItemBottomSheet() {
+    private fun showAddItemBottomSheet(query: String? = null) {
         if (requireContext().isConnected) {
+            itemsViewModel.setItemToAddFromSearchField(query)
             findNavController().navigate(StorageFragmentDirections.navigateToAddItemToStorage())
         }
     }
