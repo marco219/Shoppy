@@ -64,4 +64,6 @@
     <string name="items_in_grocery_list">articles dans ta liste de course</string>
     <string name="item_in_storage">article dans ton stock</string>
     <string name="items_in_storage">articles dans ton stock</string>
+    <string name="remote_db_is_unavailable">La base de données est indisponible. Auncune modification n\'est possible.</string>
+    <string name="title">Shoppy</string>
 </resources>

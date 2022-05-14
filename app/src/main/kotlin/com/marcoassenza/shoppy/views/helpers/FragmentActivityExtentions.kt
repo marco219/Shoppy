@@ -1,7 +1,10 @@
 package com.marcoassenza.shoppy.views.helpers
 
+import androidx.annotation.IdRes
+import androidx.annotation.StringRes
 import androidx.core.content.res.ResourcesCompat
 import androidx.fragment.app.FragmentActivity
+import com.google.android.material.appbar.MaterialToolbar
 import com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton
 import com.marcoassenza.shoppy.R
 
@@ -21,4 +24,12 @@ fun FragmentActivity.mainFabCustomizer(
     }?.show()
 
     return fab
+}
+
+fun FragmentActivity.setTopAppBarSubtitle(
+    @StringRes textResourceId: Int,
+) {
+    val context = applicationContext
+    val appBar = findViewById<MaterialToolbar>(R.id.top_app_bar)
+    appBar.subtitle = context.getString(textResourceId)
 }

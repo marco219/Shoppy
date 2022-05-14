@@ -66,7 +66,7 @@ class StorageFragment : Fragment() {
 
     override fun onResume() {
         super.onResume()
-        setupFab()
+        setupBaseView()
         setupNetworkStatusObserver()
     }
 
@@ -175,13 +175,15 @@ class StorageFragment : Fragment() {
         })
     }
 
-    private fun setupFab() {
+    private fun setupBaseView() {
         val fab = requireActivity().mainFabCustomizer(
             R.string.add_item_to_storage,
             R.drawable.ic_baseline_add_24
         ) { showAddItemBottomSheet() }
 
         binding.itemRecyclerview.enableShowHideExtendedFab(fab)
+
+        requireActivity().setTopAppBarSubtitle(R.string.title_storage)
     }
 
     private fun setupAddedItemObserver() {

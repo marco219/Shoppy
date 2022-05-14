@@ -15,6 +15,7 @@ import com.google.android.material.snackbar.Snackbar
 import com.marcoassenza.shoppy.R
 import com.marcoassenza.shoppy.adapters.CategoryChipAdapter
 import com.marcoassenza.shoppy.adapters.GroceryListAdapter
+import com.marcoassenza.shoppy.data.local.remote.RemoteDatabaseStatus.*
 import com.marcoassenza.shoppy.databinding.FragmentGroceryListBinding
 import com.marcoassenza.shoppy.models.Category
 import com.marcoassenza.shoppy.models.Item
@@ -43,6 +44,7 @@ class GroceryListFragment : Fragment() {
     private lateinit var categoryListAdapter: CategoryChipAdapter
 
     private var networkSnackbar: Snackbar? = null
+    private var remoteDbStatusSnackbar: Snackbar? = null
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -66,8 +68,9 @@ class GroceryListFragment : Fragment() {
 
     override fun onResume() {
         super.onResume()
-        setupFab()
+        setupBaseView()
         setupNetworkStatusObserver()
+        setupRemoteDatabaseStatusObserver()
     }
 
     override fun onDestroyView() {
@@ -83,12 +86,24 @@ class GroceryListFragment : Fragment() {
             .flowWithLifecycle(lifecycle, Lifecycle.State.STARTED)
             .onEach {
                 when (it) {
-                    NetworkStatus.Unavailable -> networkSnackbar = showNoNetworkSnackBar()
+                    NetworkStatus.Unavailable -> showNoNetworkSnackBar()
                     NetworkStatus.Available -> {
                         networkSnackbar?.dismiss()
                         showNetworkIsBackSnackBar()
                     }
                     else -> {}
+                }
+            }
+            .launchIn(lifecycleScope)
+    }
+
+    private fun setupRemoteDatabaseStatusObserver() {
+        itemsViewModel.remoteDataStatus
+            .flowWithLifecycle(lifecycle, Lifecycle.State.STARTED)
+            .onEach {
+                when(it){
+                    Unavailable, Failure, Unknown -> showRemoteDbUnavailableSnackBar()
+                    Available, ChangingUser, UserNameIsNull -> remoteDbStatusSnackbar?.dismiss()
                 }
             }
             .launchIn(lifecycleScope)
@@ -170,7 +185,7 @@ class GroceryListFragment : Fragment() {
         })
     }
 
-    private fun setupFab() {
+    private fun setupBaseView() {
         val fab = requireActivity().mainFabCustomizer(
             R.string.add_item_to_grocery_list,
             R.drawable.ic_baseline_add_shopping_cart_24
@@ -178,6 +193,8 @@ class GroceryListFragment : Fragment() {
             showAddItemBottomSheet()
         }
         binding.itemRecyclerview.enableShowHideExtendedFab(fab)
+
+        requireActivity().setTopAppBarSubtitle(R.string.title_grocery_list)
     }
 
     private fun showMoveToStorageBottomSheet(item: Item) {
@@ -237,6 +254,11 @@ class GroceryListFragment : Fragment() {
     private fun showNoNetworkSnackBar(): Snackbar? {
         networkSnackbar = binding.root.showIndefiniteSnackbar(getString(R.string.no_internet))
         return networkSnackbar
+    }
+
+    private fun showRemoteDbUnavailableSnackBar(): Snackbar? {
+        remoteDbStatusSnackbar = binding.root.showIndefiniteSnackbar(getString(R.string.remote_db_is_unavailable))
+        return remoteDbStatusSnackbar
     }
 
     private fun showNetworkIsBackSnackBar() {

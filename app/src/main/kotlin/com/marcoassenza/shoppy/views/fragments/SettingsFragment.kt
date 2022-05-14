@@ -17,6 +17,7 @@ import com.marcoassenza.shoppy.databinding.FragmentSettingsBinding
 import com.marcoassenza.shoppy.utils.NetworkStatus
 import com.marcoassenza.shoppy.utils.isConnected
 import com.marcoassenza.shoppy.viewmodels.ItemsViewModel
+import com.marcoassenza.shoppy.views.helpers.setTopAppBarSubtitle
 import com.marcoassenza.shoppy.views.helpers.showIndefiniteSnackbar
 import com.marcoassenza.shoppy.views.helpers.showLongSnackbar
 import dagger.hilt.android.AndroidEntryPoint
@@ -59,6 +60,7 @@ class SettingsFragment : Fragment() {
         super.onResume()
         hideFab()
         setupNetworkStatusObserver()
+        requireActivity().setTopAppBarSubtitle(R.string.title_settings)
     }
 
     override fun onDestroyView() {
