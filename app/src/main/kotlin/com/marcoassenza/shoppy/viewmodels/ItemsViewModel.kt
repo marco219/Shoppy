@@ -24,6 +24,8 @@ class ItemsViewModel @Inject constructor(
     private val preferencesDataStoreManager: PreferencesDataStoreManager
 ) : ViewModel() {
 
+    private var hasLostNetworkConnection: Boolean = false
+
     private val _remoteDataStatus: MutableStateFlow<RemoteDatabaseStatus> =
         MutableStateFlow(RemoteDatabaseStatus.Unknown)
     val remoteDataStatus: StateFlow<RemoteDatabaseStatus> = _remoteDataStatus
@@ -55,14 +57,23 @@ class ItemsViewModel @Inject constructor(
     val networkStatus: SharedFlow<NetworkStatus?> = flow {
         networkStatusTracker.networkStatus.map(
             onLost = {
+                hasLostNetworkConnection = true
                 _remoteDataStatus.emit(RemoteDatabaseStatus.Unavailable)
                 NetworkStatus.Unavailable
             },
             onAvailable = {
                 _remoteDataStatus.emit(RemoteDatabaseStatus.Available)
-                NetworkStatus.Available
+                if (hasLostNetworkConnection) {
+                    hasLostNetworkConnection = false
+                    NetworkStatus.Available
+                }
+                else {
+                    hasLostNetworkConnection = false
+                    null
+                }
             },
             onUnavailable = {
+                hasLostNetworkConnection = true
                 _remoteDataStatus.emit(RemoteDatabaseStatus.Unavailable)
                 NetworkStatus.Unavailable
             }
