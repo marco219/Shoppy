@@ -11,6 +11,14 @@ Android application to help you manage your grocery list and keep track of your 
 
 </div>
 
+## Screenshots
+
+<div align="center">
+<img src="screenshot/Screenshot_20221124-100742.png" alt="screenshot 1" style="height: 500px;"/>
+<img src="screenshot/Screenshot_20221023-220900.png" alt="screenshot 1" style="height: 500px;"/>
+<img src="screenshot/Screenshot_20221023-220909.png" alt="screenshot 1" style="height: 500px;"/>
+</div>
+
 ## Design
 
 * Design guidelines from [material.io](https://material.io/)
@@ -26,6 +34,7 @@ MVVM Architecture (View - DataBinding - ViewModel - Model)
 - [Kotlin](https://kotlinlang.org/)
 - [Coroutines](https://kotlinlang.org/docs/reference/coroutines-overview.html)
 - [Flow](https://kotlin.github.io/kotlinx.coroutines/kotlinx-coroutines-core/kotlinx.coroutines.flow/-flow/)
+- [Material3](https://m3.material.io/)
 - [Navigation](https://developer.android.com/guide/navigation)
 - [ViewModel](https://developer.android.com/topic/libraries/architecture/viewmodel)
 - [ViewBinding](https://developer.android.com/topic/libraries/view-binding)
